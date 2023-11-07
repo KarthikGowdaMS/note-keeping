@@ -66,6 +66,7 @@ footer p {
   height: 36px;
   cursor: pointer;
   outline: none;
+  background: none;
 }
 
 form.create-note {
