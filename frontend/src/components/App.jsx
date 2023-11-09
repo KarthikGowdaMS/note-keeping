@@ -1,36 +1,74 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Note from "./Note";
 import CreateArea from "./CreateArea";
+import axios from 'axios';
 
 function App() {
-
   const [notes, setNotes] = useState([]);
+  const [editingNote, setEditingNote] = useState(null);
 
-  function addNote(obj) {
-    setNotes((prevNotes) => {
-      return [...prevNotes, obj];
+  axios
+    .get(`http://localhost:5000/api/notes`)
+    .then((response) => {
+      setNotes(response.data);
     });
+
+
+  async function addNote(obj) {
+    if (editingNote) {
+      await axios.post(`http://localhost:5000/api/edit/${editingNote._id}`, {
+        title: obj.title,
+        content: obj.content
+      }, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      setEditingNote(null);
+    }
+    else {
+      await axios.post('http://localhost:5000/api/add', {
+        title: obj.title,
+        content: obj.content
+      }, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+    }
   }
 
   function deleteNote(id) {
-    setNotes(prevItems => {
-      return prevItems.filter((note, index) => {
-        return index !== id;
+    console.log(id);
+    axios.post(`http://localhost:5000/api/delete/${id}`)
+      .then(function (response) {
+        // setNotes(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
       });
-    });
   }
+
+  function editNote(id) {
+    // console.log(id);
+    const note = notes.find(note => note._id === id);
+    // console.log(note)
+    setEditingNote(note);
+  }
+
   return (
 
     <div>
       <Header />
-      <CreateArea addNote={addNote} />
-      {notes.map((note,index) =>
+      <CreateArea addNote={addNote} editingNote={editingNote} />
+      {notes.map((note) =>
         <Note
           deleteNote={deleteNote}
-          key={index}
-          id={index}
+          editNote={editNote}
+          key={note._id}
+          id={note._id}
           note={note}
         />
       )}

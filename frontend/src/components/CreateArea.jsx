@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
 import Zoom from '@mui/material/Zoom';
@@ -10,12 +10,13 @@ const fabStyle = {
 };
 
 function CreateArea(props) {
+    // console.log(props.editingNote);
 
     const [isExpanded, setExpanded] = useState(false);
     const [note, setNote] = useState({
-        title: "",
-        content: ""
-    });
+        title: props.editingNote ? props.editingNote.title : "",
+        content: props.editingNote ? props.editingNote.content : ""
+      });
 
     function handleChange(event) {
         const { value, name } = event.target;
@@ -36,6 +37,15 @@ function CreateArea(props) {
         });
         event.preventDefault();
     }
+
+    useEffect(() => {
+        if (props.editingNote) {
+          setNote({
+            title: props.editingNote.title,
+            content: props.editingNote.content
+          });
+        }
+      }, [props.editingNote]);
 
     return (
         <div>
