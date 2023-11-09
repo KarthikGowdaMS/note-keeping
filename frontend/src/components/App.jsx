@@ -10,7 +10,7 @@ function App() {
   const [editingNote, setEditingNote] = useState(null);
 
   axios
-    .get(`http://localhost:5000/api/notes`)
+    .get(`https://karthik-notes-keeping.azurewebsites.net/api/notes`)
     .then((response) => {
       setNotes(response.data);
     });
@@ -18,7 +18,7 @@ function App() {
 
   async function addNote(obj) {
     if (editingNote) {
-      await axios.post(`http://localhost:5000/api/edit/${editingNote._id}`, {
+      await axios.post(`https://karthik-notes-keeping.azurewebsites.net/api/edit/${editingNote._id}`, {
         title: obj.title,
         content: obj.content
       }, {
@@ -29,7 +29,7 @@ function App() {
       setEditingNote(null);
     }
     else {
-      await axios.post('http://localhost:5000/api/add', {
+      await axios.post('https://karthik-notes-keeping.azurewebsites.net/api/add', {
         title: obj.title,
         content: obj.content
       }, {
@@ -42,7 +42,7 @@ function App() {
 
   function deleteNote(id) {
     console.log(id);
-    axios.post(`http://localhost:5000/api/delete/${id}`)
+    axios.post(`https://karthik-notes-keeping.azurewebsites.net/api/delete/${id}`)
       .then(function (response) {
         // setNotes(response.data);
       })
