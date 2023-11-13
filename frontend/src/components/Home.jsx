@@ -15,7 +15,7 @@ function Home() {
   useEffect(() => {
     if (success) {
       axios
-        .get(`http://localhost:5000/api/notes/`, {
+        .get(`https://karthik-notes-keeping.azurewebsites.net/api/notes`, {
           headers: {
             'auth-token': localStorage.getItem('token'),
           },
@@ -35,7 +35,7 @@ function Home() {
     // console.log(obj);
     if (editingNote) {
       await axios.post(
-        `http://localhost:5000/api/notes/edit/${editingNote._id}`,
+        `https://karthik-notes-keeping.azurewebsites.net/api/notes/edit/${editingNote._id}`,
         {
           title: obj.title,
           content: obj.content,
@@ -50,7 +50,7 @@ function Home() {
       setEditingNote(null);
     } else {
       await axios.post(
-        'http://localhost:5000/api/notes/add',
+        'https://karthik-notes-keeping.azurewebsites.net/api/notes/add',
         {
           title: obj.title,
           content: obj.content,
@@ -67,7 +67,7 @@ function Home() {
 
   function deleteNote(id) {
     console.log(id);
-    axios.post(`http://localhost:5000/api/notes/delete/${id}`, null, {
+    axios.post(`https://karthik-notes-keeping.azurewebsites.net/api/notes/delete/${id}`, null, {
       headers: {
         'auth-token': localStorage.getItem('token'),
       },
