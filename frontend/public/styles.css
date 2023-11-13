@@ -270,7 +270,7 @@ form.create-note button {
     padding: 16px 16px;
   }
   .greeting {
-    font-size: 1.3rem;
+    /* font-size: 1.3rem; */
     text-align: left;
     width: auto;
   }
