@@ -31,10 +31,10 @@ export default function Header(props) {
           </Link>
       {localStorage.getItem('token') ? (
         <>
-          <p>
-            {greeting}, {props.name}
+          <p className='greeting'>
+            {greeting}, {props.name.slice(0, props.name.indexOf(' '))}
           </p>
-          <div className="btn-container">
+          <div className="btn-container logout">
             <Link
               className="btn btn-light nav-btn"
               to="/"

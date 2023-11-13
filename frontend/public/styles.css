@@ -21,13 +21,12 @@ header {
   padding: 16px 32px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
 }
-header p {
+.greeting {
   position: relative;
   color: white;
   font-size: 1.5rem;
   display: inline-block;
-  /* left:65vw; */
-  text-align: end;
+  text-align: right;
   width: 77vw;
   font-weight: bold;
 }
@@ -269,5 +268,13 @@ form.create-note button {
 
   header {
     padding: 16px 16px;
+  }
+  .greeting {
+    font-size: 1.3rem;
+    text-align: left;
+    width: auto;
+  }
+  .logout {
+    margin-top: 0vh;
   }
 }
