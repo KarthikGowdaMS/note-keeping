@@ -1,4 +1,5 @@
 {
     "appService.defaultWebAppToDeploy": "/subscriptions/e4e0631c-e346-4a64-8c7c-b06c63397b4d/resourceGroups/karthik-notes-keeping/providers/Microsoft.Web/sites/karthik-notes-keeping",
-    "appService.deploySubpath": "/backend"
+    "appService.deploySubpath": "/backend",
+    "appService.showBuildDuringDeployPrompt": false
 }
