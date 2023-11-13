@@ -159,7 +159,7 @@ export default function SignUp() {
       <p className="existing">
         Already have an account?{' '}
         <Link className="link" to="/login">
-          Sign up now
+          Sign in now
         </Link>
       </p>
     </>
