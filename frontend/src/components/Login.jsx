@@ -1,7 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import Header from './Header';
+
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -42,12 +44,13 @@ export default function Login() {
     if (json.success) {
       localStorage.setItem('token', json.authToken);
       localStorage.setItem('name', json.name);
-      navigate('/home');
+      navigate('/');
     }
   }
 
   return (
     <>
+      <Header name={localStorage.getItem('name')} />
       <h1 className="auth-header">Sign In</h1>
       <div className="login-container">
         <form onSubmit={handleSubmit}>
@@ -97,7 +100,10 @@ export default function Login() {
         </form>
       </div>
       <p className="existing">
-        New User? <a href="/signup">Sign up now</a>
+        New User?{' '}
+        <Link className="link" to="/signup">
+          Sign up now
+        </Link>
       </p>
     </>
   );

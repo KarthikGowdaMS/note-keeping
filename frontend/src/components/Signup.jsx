@@ -1,13 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import Header from './Header';
 
 export default function SignUp() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [samePassword, setSamePassword] = useState(true);
+
   const [credentials, setCredentials] = useState({
     name: '',
     email: '',
@@ -37,13 +39,27 @@ export default function SignUp() {
     if (json.success) {
       localStorage.setItem('token', json.authToken);
       localStorage.setItem('name', json.name);
-      navigate('/home');
+      navigate('/');
     }
   }
 
-
   function handleChange(e) {
     const { name, value } = e.target;
+    if (name === 'password') {
+      if (
+        value.length !== 0 &&
+        confirmPassword.length !== 0 &&
+        value !== confirmPassword
+      ) {
+        setSamePassword(false);
+      } else if (
+        value.length !== 0 &&
+        confirmPassword.length !== 0 &&
+        value === confirmPassword
+      ) {
+        setSamePassword(true);
+      }
+    }
     setCredentials((prev) => {
       return {
         ...prev,
@@ -53,6 +69,7 @@ export default function SignUp() {
   }
 
   function handleConfirmPasswordChange(e) {
+    setConfirmPassword(e.target.value);
     if (e.target.value === '' || credentials.password === '') {
       setSamePassword(true);
       return;
@@ -66,6 +83,7 @@ export default function SignUp() {
 
   return (
     <>
+      <Header name={localStorage.getItem('name')} />
       <h1 className="auth-header">Sign Up</h1>
       <div className="login-container">
         <form onSubmit={handleSubmit}>
@@ -139,7 +157,10 @@ export default function SignUp() {
         </form>
       </div>
       <p className="existing">
-        Already have an account? <a href="/login">Sign in now</a>
+        Already have an account?{' '}
+        <Link className="link" to="/login">
+          Sign up now
+        </Link>
       </p>
     </>
   );
