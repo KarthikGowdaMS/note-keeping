@@ -19,7 +19,6 @@ mongoose.connect(
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'https://witty-field-0607dc10f.4.azurestaticapps.net/',
     credentials: true,
   })
 );
