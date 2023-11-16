@@ -1,6 +1,6 @@
 import HighlightIcon from '@mui/icons-material/Highlight';
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/logincontext';
 export default function Header(props) {

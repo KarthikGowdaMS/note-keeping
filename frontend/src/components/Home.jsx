@@ -10,22 +10,22 @@ import { Link } from 'react-router-dom';
 function Home(props) {
   const { isLoggedIn } = useContext(AuthContext);
   const [notesUpdated, setNotesUpdated] = useState(false);
-  const [greeting, setGreeting] = useState('');
+  // const [greeting, setGreeting] = useState('');
   const [alert, setAlert] = useState('Loading Notes...');
   const [notes, setNotes] = useState([]);
   const [editingNote, setEditingNote] = useState(null);
   const [userName, setUserName] = useState('');
 
-  useEffect(() => {
-    const hours = new Date().getHours();
-    if (hours >= 0 && hours < 12) {
-      setGreeting('Good Morning');
-    } else if (hours >= 12 && hours < 16) {
-      setGreeting('Good Afternoon');
-    } else {
-      setGreeting('Good Evening');
-    }
-  }, []);
+  // useEffect(() => {
+  //   const hours = new Date().getHours();
+  //   if (hours >= 0 && hours < 12) {
+  //     setGreeting('Good Morning');
+  //   } else if (hours >= 12 && hours < 16) {
+  //     setGreeting('Good Afternoon');
+  //   } else {
+  //     setGreeting('Good Evening');
+  //   }
+  // }, []);
 
   // console.log(isLoggedIn);
   useEffect(() => {
