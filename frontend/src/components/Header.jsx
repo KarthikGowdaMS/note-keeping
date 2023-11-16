@@ -9,7 +9,7 @@ export default function Header(props) {
   const navigate = useNavigate();
   function handleLogout() {
     axios
-      .get(BASE_URL+'api/auth/logout', {
+      .get(BASE_URL+'/api/auth/logout', {
         withCredentials: true,
       })
       .then((response) => {
