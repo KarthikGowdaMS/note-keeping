@@ -8,7 +8,7 @@ export default function Header(props) {
   const navigate = useNavigate();
   function handleLogout() {
     axios
-      .get('http://localhost:5000/api/auth/logout', {
+      .get('https://karthik-notes-keeping.azurewebsites.net/auth/logout', {
         withCredentials: true,
       })
       .then((response) => {

@@ -37,7 +37,7 @@ function Home(props) {
 
   async function getNotes() {
     await axios
-      .get(`http://localhost:5000/api/notes`, { withCredentials: true })
+      .get(`https://karthik-notes-keeping.azurewebsites.net/api/notes`, { withCredentials: true })
       .then((response) => {
         // console.log(response.data);
         setNotes(response.data);
@@ -50,7 +50,7 @@ function Home(props) {
   }
 
   async function getUser() {
-    const response = await axios.get('http://localhost:5000/api/auth/getuser', {
+    const response = await axios.get('https://karthik-notes-keeping.azurewebsites.net/api/auth/getuser', {
       withCredentials: true,
     });
     console.log(response.data);
@@ -61,7 +61,7 @@ function Home(props) {
     // console.log(obj);
     if (editingNote) {
       await axios.post(
-        `http://localhost:5000/api/notes/edit/${editingNote._id}`,
+        `https://karthik-notes-keeping.azurewebsites.net/api/notes/edit/${editingNote._id}`,
         {
           title: obj.title,
           content: obj.content,
@@ -73,7 +73,7 @@ function Home(props) {
       setNotesUpdated(!notesUpdated);
     } else {
       await axios.post(
-        'http://localhost:5000/api/notes/add',
+        'https://karthik-notes-keeping.azurewebsites.net/api/notes/add',
         {
           title: obj.title,
           content: obj.content,
@@ -87,7 +87,7 @@ function Home(props) {
 
   async function deleteNote(id) {
     console.log(id);
-    await axios.post(`http://localhost:5000/api/notes/delete/${id}`, null, {
+    await axios.post(`https://karthik-notes-keeping.azurewebsites.net/api/notes/delete/${id}`, null, {
       withCredentials: true,
     });
     // getNotes();
