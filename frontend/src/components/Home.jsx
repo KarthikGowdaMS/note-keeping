@@ -110,7 +110,7 @@ function Home(props) {
               Login
             </Link>
             <Link className="auth-link link" to="/signup">
-              Signup
+              SignUp
             </Link>
           </div>
         </>

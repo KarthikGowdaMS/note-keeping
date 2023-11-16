@@ -48,7 +48,7 @@ export default function Header(props) {
             Login
           </Link>
           <Link className="btn btn-light nav-btn" to="/signup">
-            Signup
+            SignUp
           </Link>
         </div>
       )}
