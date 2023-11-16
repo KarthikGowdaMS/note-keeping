@@ -6,8 +6,10 @@ import Note from './Note';
 import CreateArea from './CreateArea';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import BASE_URL from '../config';
 
 function Home(props) {
+
   const { isLoggedIn } = useContext(AuthContext);
   const [notesUpdated, setNotesUpdated] = useState(false);
   // const [greeting, setGreeting] = useState('');
@@ -37,7 +39,10 @@ function Home(props) {
 
   async function getNotes() {
     await axios
-      .get(`https://karthik-notes-keeping.azurewebsites.net/api/notes`, { withCredentials: true })
+      .get(
+        BASE_URL+`/api/notes`,
+        { withCredentials: true },
+      )
       .then((response) => {
         // console.log(response.data);
         setNotes(response.data);
@@ -50,9 +55,12 @@ function Home(props) {
   }
 
   async function getUser() {
-    const response = await axios.get('https://karthik-notes-keeping.azurewebsites.net/api/auth/getuser', {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      BASE_URL+'/api/auth/getuser',
+      {
+        withCredentials: true,
+      }
+    );
     console.log(response.data);
     setUserName(response.data);
   }
@@ -61,7 +69,7 @@ function Home(props) {
     // console.log(obj);
     if (editingNote) {
       await axios.post(
-        `https://karthik-notes-keeping.azurewebsites.net/api/notes/edit/${editingNote._id}`,
+        BASE_URL+`/api/notes/edit/${editingNote._id}`,
         {
           title: obj.title,
           content: obj.content,
@@ -73,7 +81,7 @@ function Home(props) {
       setNotesUpdated(!notesUpdated);
     } else {
       await axios.post(
-        'https://karthik-notes-keeping.azurewebsites.net/api/notes/add',
+        BASE_URL+'/api/notes/add',
         {
           title: obj.title,
           content: obj.content,
@@ -87,9 +95,13 @@ function Home(props) {
 
   async function deleteNote(id) {
     console.log(id);
-    await axios.post(`https://karthik-notes-keeping.azurewebsites.net/api/notes/delete/${id}`, null, {
-      withCredentials: true,
-    });
+    await axios.post(
+    BASE_URL+`/api/notes/delete/${id}`,
+      null,
+      {
+        withCredentials: true,
+      }
+    );
     // getNotes();
     setNotesUpdated(!notesUpdated);
   }
@@ -116,7 +128,7 @@ function Home(props) {
         </>
       ) : (
         <div>
-          <h1 className='greeting'>hello {userName}</h1>
+          <h1 className="greeting">hello {userName}</h1>
           <CreateArea addNote={addNote} editingNote={editingNote} />
           {notes.length === 0 && (
             <div className="no-note">

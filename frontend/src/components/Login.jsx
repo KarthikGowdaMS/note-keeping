@@ -3,6 +3,7 @@ import { useState, useContext } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/logincontext';
+import BASE_URL from '../config';
 
 export default function Login(props) {
   console.log(props);
@@ -32,7 +33,7 @@ export default function Login(props) {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const response = await fetch(`https://karthik-notes-keeping.azurewebsites.net/api/auth/login`, {
+    const response = await fetch(BASE_URL+'/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

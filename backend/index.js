@@ -10,7 +10,6 @@ const User = require('./models/user').User;
 const app = express();
 const cookieParser = require('cookie-parser');
 
-
 mongoose.connect(
   'mongodb+srv://karthikgowdams27:VsP418YvovfO4Uuj@root-cluster.ppsjecp.mongodb.net/noteDB'
 );
@@ -19,6 +18,7 @@ mongoose.connect(
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
+    origin: 'https://witty-field-0607dc10f.4.azurestaticapps.net',
     credentials: true,
   })
 );
@@ -29,7 +29,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // Set to true if using HTTPS
+      secure: true, // Set to true if using HTTPS
       httpOnly: true,
       maxAge: 3600000, // Session max age in milliseconds
     },
@@ -42,7 +42,6 @@ app.use(passport.session());
 // Adding Local Strategy to passport
 passport.use(User.createStrategy());
 
-
 // Serializing and Deserializing User
 passport.serializeUser(function (user, cb) {
   process.nextTick(function () {
@@ -54,11 +53,10 @@ passport.serializeUser(function (user, cb) {
   });
 });
 
-passport.deserializeUser(function (user, cb) {
-  process.nextTick(function () {
-    return cb(null, user);
-  });
-
+passport.deserializeUser(async function (serializedUserData, cb) {
+  // console.log(serializedUserData);
+  const user = await User.findById(serializedUserData.id);
+  cb(null, user);
 });
 
 // Routes
