@@ -1,10 +1,11 @@
 const express = require('express');
 const noteRouter = express.Router();
 const Note = require('../models/note');
-const fetchuser = require('../middleware/fetchuser');
+const checkAuthenticated = require('../middleware/fetchuser');
 
-noteRouter.get('/', fetchuser, async function (req, res) {
+noteRouter.get('/', checkAuthenticated, async function (req, res) {
   try {
+    console.log(req.user.id);
     const notes = await Note.find({ user: req.user.id }).sort({ date: 'desc' });
     res.json(notes);
   } catch (error) {
@@ -13,7 +14,7 @@ noteRouter.get('/', fetchuser, async function (req, res) {
   }
 });
 
-noteRouter.post('/add', fetchuser, async function (req, res) {
+noteRouter.post('/add', checkAuthenticated, async function (req, res) {
   // console.log(req.body);
   try {
     const { title, content } = req.body;
@@ -31,7 +32,7 @@ noteRouter.post('/add', fetchuser, async function (req, res) {
   }
 });
 
-noteRouter.post('/edit/:id', fetchuser, async function (req, res) {
+noteRouter.post('/edit/:id', checkAuthenticated, async function (req, res) {
   try {
     const id = req.params.id;
     let note = await Note.findById(id);
@@ -57,7 +58,7 @@ noteRouter.post('/edit/:id', fetchuser, async function (req, res) {
   }
 });
 
-noteRouter.post('/delete/:id', fetchuser, async function (req, res) {
+noteRouter.post('/delete/:id', checkAuthenticated, async function (req, res) {
   const id = req.params.id;
   let note = await Note.findById(id);
   if (!note) {
@@ -75,5 +76,7 @@ noteRouter.post('/delete/:id', fetchuser, async function (req, res) {
     res.status(500).send('Internal Server Error');
   }
 });
+
+
 
 module.exports = noteRouter;

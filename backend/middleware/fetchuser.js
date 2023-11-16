@@ -1,16 +1,10 @@
-const jwt = require('jsonwebtoken');
-const JWT_SECRET = 'thisismysecret';
-
-function fetchuser(req, res, next) {
-  try {
-    const token = req.header('auth-token');
-    const data = jwt.verify(token, JWT_SECRET);
-    req.user = data.user;
-    // console.log(req.user);
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    console.log('Authenticated');
     next();
-  } catch (error) {
-    res.status(401).send({ error: 'Please authenticate using a valid token' });
+  } else {
+    res.status(401).json({ error: 'Not Authorized' });
   }
 }
 
-module.exports = fetchuser;
+module.exports = checkAuthenticated;
