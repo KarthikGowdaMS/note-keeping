@@ -1,77 +1,97 @@
 import React, { useEffect, useState } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../context/logincontext';
+
 import Note from './Note';
 import CreateArea from './CreateArea';
 import axios from 'axios';
-import { Link} from 'react-router-dom';
-import Header from './Header';
+import { Link } from 'react-router-dom';
 
-function Home() {
-
-  const success = localStorage.getItem('token');
+function Home(props) {
+  const { isLoggedIn } = useContext(AuthContext);
+  const [notesUpdated, setNotesUpdated] = useState(false);
+  const [greeting, setGreeting] = useState('');
   const [alert, setAlert] = useState('Loading Notes...');
   const [notes, setNotes] = useState([]);
   const [editingNote, setEditingNote] = useState(null);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    if (success) {
-      axios
-        .get(`https://karthik-notes-keeping.azurewebsites.net/api/notes`, {
-          headers: {
-            'auth-token': localStorage.getItem('token'),
-          },
-        })
-        .then((response) => {
-          setNotes(response.data);
-          if (notes.length === 0) {
-            setAlert('No Notes to display');
-          } else {
-            setAlert('');
-          }
-        });
+    const hours = new Date().getHours();
+    if (hours >= 0 && hours < 12) {
+      setGreeting('Good Morning');
+    } else if (hours >= 12 && hours < 16) {
+      setGreeting('Good Afternoon');
+    } else {
+      setGreeting('Good Evening');
     }
-  });
+  }, []);
+
+  // console.log(isLoggedIn);
+  useEffect(() => {
+    if (isLoggedIn) {
+      getUser();
+      getNotes();
+    }
+  }, [isLoggedIn, notesUpdated]);
+
+  async function getNotes() {
+    await axios
+      .get(`http://localhost:5000/api/notes`, { withCredentials: true })
+      .then((response) => {
+        // console.log(response.data);
+        setNotes(response.data);
+        if (response.data.length === 0) {
+          setAlert('No Notes to display');
+        } else {
+          setAlert('');
+        }
+      });
+  }
+
+  async function getUser() {
+    const response = await axios.get('http://localhost:5000/api/auth/getuser', {
+      withCredentials: true,
+    });
+    console.log(response.data);
+    setUserName(response.data);
+  }
 
   async function addNote(obj) {
     // console.log(obj);
     if (editingNote) {
       await axios.post(
-        `https://karthik-notes-keeping.azurewebsites.net/api/notes/edit/${editingNote._id}`,
+        `http://localhost:5000/api/notes/edit/${editingNote._id}`,
         {
           title: obj.title,
           content: obj.content,
         },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'auth-token': localStorage.getItem('token'),
-          },
-        }
+        { withCredentials: true }
       );
       setEditingNote(null);
+      // getNotes();
+      setNotesUpdated(!notesUpdated);
     } else {
       await axios.post(
-        'https://karthik-notes-keeping.azurewebsites.net/api/notes/add',
+        'http://localhost:5000/api/notes/add',
         {
           title: obj.title,
           content: obj.content,
         },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'auth-token': localStorage.getItem('token'),
-          },
-        }
+        { withCredentials: true }
       );
+      // getNotes();
+      setNotesUpdated(!notesUpdated);
     }
   }
 
-  function deleteNote(id) {
+  async function deleteNote(id) {
     console.log(id);
-    axios.post(`https://karthik-notes-keeping.azurewebsites.net/api/notes/delete/${id}`, null, {
-      headers: {
-        'auth-token': localStorage.getItem('token'),
-      },
+    await axios.post(`http://localhost:5000/api/notes/delete/${id}`, null, {
+      withCredentials: true,
     });
+    // getNotes();
+    setNotesUpdated(!notesUpdated);
   }
 
   function editNote(id) {
@@ -82,8 +102,7 @@ function Home() {
   }
   return (
     <>
-      <Header name={localStorage.getItem('name')} />
-      {!success ? (
+      {!isLoggedIn ? (
         <>
           <h1 className="header">Welcome to KG Notes</h1>
           <div className="link-container">
@@ -97,6 +116,7 @@ function Home() {
         </>
       ) : (
         <div>
+          <h1 className='greeting'>hello {userName}</h1>
           <CreateArea addNote={addNote} editingNote={editingNote} />
           {notes.length === 0 && (
             <div className="no-note">

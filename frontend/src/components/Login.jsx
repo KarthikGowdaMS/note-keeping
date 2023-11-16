@@ -1,11 +1,14 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
-import Header from './Header';
+import { AuthContext } from '../context/logincontext';
 
-export default function Login() {
+export default function Login(props) {
+  console.log(props);
   const navigate = useNavigate();
+  const { setIsLoggedIn } = useContext(AuthContext);
+
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
     email: '',
@@ -28,8 +31,8 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    // console.log(credentials);
-    const response = await fetch(`https://karthik-notes-keeping.azurewebsites.net/api/auth/login`, {
+
+    const response = await fetch(`http://localhost:5000/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -38,19 +41,31 @@ export default function Login() {
         email: credentials.email,
         password: credentials.password,
       }),
+      credentials: 'include', // Include cookies
     });
-    const json = await response.json();
-    console.log(json);
-    if (json.success) {
-      localStorage.setItem('token', json.authToken);
-      localStorage.setItem('name', json.name);
-      navigate('/');
+    // console.log(response);
+    if (response.status === 200 && response.status < 300) {
+      const json = await response.json();
+      if (json.success) {
+        props.showAlert('Logged in Success', 'success');
+        setIsLoggedIn(true);
+        navigate('/');
+      }
+    } else if (response.status === 401) {
+      props.showAlert('Invalid Credentials', 'danger');
+      navigate('/login');
+    }
+    else if (response.status === 400) {
+   const json = await response.json();
+      console.log(json);
+      props.showAlert(json.error, 'danger');
+      navigate('/login');
     }
   }
 
+
   return (
     <>
-      <Header name={localStorage.getItem('name')} />
       <h1 className="auth-header">Sign In</h1>
       <div className="login-container">
         <form onSubmit={handleSubmit}>

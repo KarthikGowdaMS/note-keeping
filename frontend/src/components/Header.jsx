@@ -1,39 +1,37 @@
 import HighlightIcon from '@mui/icons-material/Highlight';
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { AuthContext } from '../context/logincontext';
 export default function Header(props) {
-  const [greeting, setGreeting] = useState('');
-
-  useEffect(() => {
-    const hours = new Date().getHours();
-    if (hours >= 0 && hours < 12) {
-      setGreeting('Good Morning');
-    } else if (hours >= 12 && hours < 16) {
-      setGreeting('Good Afternoon');
-    } else {
-      setGreeting('Good Evening');
-    }
-  }, []);
-
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   function handleLogout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('name');
-    navigate('/');
+    axios
+      .get('http://localhost:5000/api/auth/logout', {
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log(response);
+        // Update isLoggedIn state to false
+        setIsLoggedIn(false);
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
+
+  // console.log(isLoggedIn);
   return (
     <header>
       <Link to="/">
-      <h1 className="nav-heading">
+        <h1 className="nav-heading">
           <HighlightIcon /> Keeper
         </h1>
-          </Link>
-      {localStorage.getItem('token') ? (
+      </Link>
+      {isLoggedIn ? (
         <>
-          <p className='greeting'>
-            {greeting}, {props.name.slice(0, props.name.indexOf(' '))}
-          </p>
           <div className="btn-container logout">
             <Link
               className="btn btn-light nav-btn"

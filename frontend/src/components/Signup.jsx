@@ -1,10 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../context/logincontext';
+
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
-import Header from './Header';
 
-export default function SignUp() {
+
+export default function SignUp(props) {
+  const { setIsLoggedIn } = useContext(AuthContext);
+
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,24 +27,49 @@ export default function SignUp() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log(credentials);
-    const response = await fetch(`https://karthik-notes-keeping.azurewebsites.net/api/auth/createuser`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: credentials.name,
-        email: credentials.email,
-        password: credentials.password,
-      }),
-    });
-    const json = await response.json();
-    console.log(json);
-    if (json.success) {
-      localStorage.setItem('token', json.authToken);
-      localStorage.setItem('name', json.name);
-      navigate('/');
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/auth/createuser`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: credentials.name,
+            email: credentials.email,
+            password: credentials.password,
+          }),
+          credentials: 'include', // Include cookies
+        }
+      );
+      if (response.status === 200 && response.status < 300) {
+        const json = await response.json();
+        console.log(json);
+        if (json.success) {
+          props.showAlert('Logged in Success', 'success')
+          setIsLoggedIn(true);
+          navigate('/');
+        }
+      }
+      else if(response.status === 400){
+        const json = await response.json();
+        console.log(json);
+        if (json.error) {
+          props.showAlert('Something error occurred', 'danger')
+
+          // alert(json.error);
+        }
+      }
+      else
+      {
+        props.showAlert('Something error occurred', 'danger')
+      }
+
+    } catch (error) {
+      console.log(error);
+      props.showAlert('Invalid Credentials', 'danger')
+      navigate('/login');
     }
   }
 
@@ -83,7 +113,7 @@ export default function SignUp() {
 
   return (
     <>
-      <Header name={localStorage.getItem('name')} />
+
       <h1 className="auth-header">Sign Up</h1>
       <div className="login-container">
         <form onSubmit={handleSubmit}>
