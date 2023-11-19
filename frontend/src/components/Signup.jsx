@@ -5,7 +5,7 @@ import { AuthContext } from '../context/logincontext';
 
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
-import BASE_URL from '../config';
+// import BASE_URL from '../config';
 
 
 export default function SignUp(props) {
