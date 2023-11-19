@@ -30,7 +30,7 @@ export default function SignUp(props) {
     e.preventDefault();
     try {
       const response = await fetch(
-        BASE_URL+`/api/auth/createuser`,
+        `/api/auth/createuser`,
         {
           method: 'POST',
           headers: {

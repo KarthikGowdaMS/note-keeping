@@ -18,7 +18,7 @@ mongoose.connect(
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'https://witty-field-0607dc10f.4.azurestaticapps.net',
+    origin: 'https://witty-field-0607dc10f.4.azurestaticapps.net/',
     credentials: true,
   })
 );
@@ -31,6 +31,7 @@ app.use(
     cookie: {
       secure: true, // Set to true if using HTTPS
       httpOnly: true,
+      // sameSite: 'none',
       maxAge: 3600000, // Session max age in milliseconds
     },
   })

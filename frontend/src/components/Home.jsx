@@ -6,7 +6,7 @@ import Note from './Note';
 import CreateArea from './CreateArea';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import BASE_URL from '../config';
+// import BASE_URL from '../config';
 
 function Home(props) {
 
@@ -40,7 +40,7 @@ function Home(props) {
   async function getNotes() {
     await axios
       .get(
-        BASE_URL+`/api/notes`,
+        `/api/notes`,
         { withCredentials: true },
       )
       .then((response) => {
@@ -56,7 +56,7 @@ function Home(props) {
 
   async function getUser() {
     const response = await axios.get(
-      BASE_URL+'/api/auth/getuser',
+      '/api/auth/getuser',
       {
         withCredentials: true,
       }
@@ -69,7 +69,7 @@ function Home(props) {
     // console.log(obj);
     if (editingNote) {
       await axios.post(
-        BASE_URL+`/api/notes/edit/${editingNote._id}`,
+        `/api/notes/edit/${editingNote._id}`,
         {
           title: obj.title,
           content: obj.content,
@@ -81,7 +81,7 @@ function Home(props) {
       setNotesUpdated(!notesUpdated);
     } else {
       await axios.post(
-        BASE_URL+'/api/notes/add',
+        '/api/notes/add',
         {
           title: obj.title,
           content: obj.content,
@@ -96,7 +96,7 @@ function Home(props) {
   async function deleteNote(id) {
     console.log(id);
     await axios.post(
-    BASE_URL+`/api/notes/delete/${id}`,
+    `/api/notes/delete/${id}`,
       null,
       {
         withCredentials: true,
