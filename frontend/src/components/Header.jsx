@@ -3,13 +3,13 @@ import axios from 'axios';
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/logincontext';
-// import BASE_URL from '../config';
+import BASE_URL from '../config';
 export default function Header(props) {
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   function handleLogout() {
     axios
-      .get('/api/auth/logout', {
+      .get(BASE_URL+'/api/auth/logout', {
         withCredentials: true,
       })
       .then((response) => {

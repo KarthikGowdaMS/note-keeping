@@ -1,3 +1,3 @@
-// const BASE_URL='http://192.168.0.103:5000'
+const BASE_URL='https://karthik-notes-keeping.azurewebsites.net'
 
-// export default BASE_URL;
+export default BASE_URL;
