@@ -5,7 +5,7 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://karthik-notes-keeping.azurewebsites.net/',
+      target: 'https://karthik-notes-keeping.azurewebsites.net',
       changeOrigin: true,
     })
   );
