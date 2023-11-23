@@ -2,10 +2,11 @@ import React from 'react';
 import { useState } from 'react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/logincontext';
-
+import axios from 'axios';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import BASE_URL from '../config';
+
 
 
 export default function SignUp(props) {
@@ -28,51 +29,41 @@ export default function SignUp(props) {
 
   async function handleSubmit(e) {
     e.preventDefault();
+  
     try {
-      const response = await fetch(
-        BASE_URL+`/api/auth/createuser`,
+      const response = await axios.post(
+        `${BASE_URL}/api/auth/signup`,
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
-          },
-          body: JSON.stringify({
-            name: credentials.name,
-            email: credentials.email,
-            password: credentials.password,
-          }),
-          credentials: 'include', // Include cookies
-        }
+          name: credentials.name,
+          email: credentials.email,
+          password: credentials.password,
+        },
+        { withCredentials: true } // Include this in the request config
       );
+  
+      console.log(response);
+  
       if (response.status === 200 && response.status < 300) {
-        const json = await response.json();
-        console.log(json);
+        const json = response.data;
+  
         if (json.success) {
-          props.showAlert('Logged in Success', 'success')
+          props.showAlert('Signup Success', 'success');
           setIsLoggedIn(true);
           navigate('/');
         }
+      } else {
+        props.showAlert('Something error occurred', 'danger');
       }
-      else if(response.status === 400){
-        const json = await response.json();
-        console.log(json);
-        if (json.error) {
-          props.showAlert('Something error occurred', 'danger')
-
-          // alert(json.error);
-        }
-      }
-      else
-      {
-        props.showAlert('Something error occurred', 'danger')
-      }
-
     } catch (error) {
-      console.log(error);
-      props.showAlert('Invalid Credentials', 'danger')
-      navigate('/login');
+      console.error(error);
+      if (error.response && error.response.status === 400) {
+        const json = error.response.data;
+        console.log(json);
+        props.showAlert(json.error, 'danger');
+      } else {
+        props.showAlert('Invalid Credentials', 'danger');
+      }
+      navigate('/signup');
     }
   }
 

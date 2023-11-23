@@ -1,99 +1,159 @@
 const express = require('express');
-const authRouter = express.Router();
-const { body, validationResult } = require('express-validator');
+const router = express.Router();
+const path = require('path');
 const passport = require('passport');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const checkAuthenticated = require('../middleware/fetchuser');
-const User = require('../models/user').User;
+const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20');
+const User = require('../models/user.js');
+const ensureAuthenticated = require('../middleware/ensureAuthenticated.js');
 
+router.get('/user', ensureAuthenticated, async (req, res) => {
+  const id = req.session.passport.user;
 
-authRouter.post(
-  '/createuser',
-  [
-    body('name', 'Enter a valid name').isLength({ min: 3 }),
-    body('email', 'Enter a valid Email').isEmail(),
-    body('password', 'Enter a valid password').isLength({ min: 5 }),
-  ],
-  async function (req, res) {
-    let success = false;
-    const result = validationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).json({ success, error: result.array() });
+  // call db and find user by currenUser which is user id
+  // get username and email
+
+  // console.log('hello', currentUser);
+  // console.log(id);
+  const user = await User.findById(id);
+  // const user = {
+  //   loggedIn: true,
+  //   name: dbUser.name,
+  //   email: dbUser.email,
+  // };
+  res.json(user.name);
+});
+
+//local auth signup
+router.post('/signup', (req, res, next) => {
+  let success = false;
+  passport.authenticate('local-signup', (err, user, info) => {
+    if (err) {
+      console.log(err);
+      return next(err);
     }
 
-    User.register(
-      { name: req.body.name, email: req.body.email },
-      req.body.password,
-      function (err, user) {
-        if (err) {
-          // console.log(err);
-          return res.status(400).send({ success, error: err.message });
-        } else {
-          passport.authenticate('local')(req, res, function () {
-            user.hash = undefined;
-            user.salt = undefined;
-            res.status(200).json({ success: true, user });
-          });
-        }
+    if (!user) {
+      console.log('not a user');
+      return res
+        .status(401)
+        .json({ success: success, message: 'Incorrect email or password' });
+    }
+
+    req.login(user, (err) => {
+      if (err) {
+        console.log('auth error');
+        return next(err);
       }
-    );
-  }
-);
-
-authRouter.post(
-  '/login',
-  [
-    body('email', 'Enter a valid Email').isEmail(),
-    body('password', 'password cannot be blank').exists(),
-  ],
-  async function (req, res) {
-    let success = false;
-    const { email } = req.body;
-    // console.log(req.body);
-
-    const result = validationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).json({ success, error: result.array() });
-    }
-    try {
-      const user = await User.findOne({ email });
-
-      if (!user) {
-        return res.status(400).json({ success, error: "User doesn't exist" });
-      }
-
-      req.login(user, function (err) {
-        if (err) {
-          console.log(err);
-          res.status(401).json({ success, error: err.message });
-        } else {
-          passport.authenticate('local')(req, res, function () {
-            res.status(200).json({ success: true, user });
-          });
-        }
-      });
-    } catch (error) {
-      res.status(500).send('Internal server error');
-    }
-  }
-);
-
-authRouter.get('/logout',function (req, res) {
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.json({message: 'Logged out successfully'});
+      success = true;
+      res.cookie('name', req.user.name);
+      res.cookie('email', req.body.email);
+      res.cookie('userId', req.user.id);
+      // console.log('confirm');
+      return res.status(200).json({ success: success, user: req.user });
     });
+  })(req, res, next);
 });
 
-authRouter.get('/getuser', checkAuthenticated, async function (req, res) {
-  try {
-    const id = req.user.id;
-    const user = await User.findById(id).select('-password');
-    res.send(user.name);
-  } catch (error) {
-    res.status(500).send('Internal server error');
-  }
+//local auth sign in
+router.post('/login', (req, res, next) => {
+  console.log(req.body);
+  passport.authenticate('local-signin', (err, user, info) => {
+    let success = false;
+    if (err) {
+      //   console.log("41", err)
+      return next(err);
+    }
+
+    if (!user) {
+      // console.log('not a user');
+      // req.flash('notify', 'This is a test notification.');
+      return res
+        .status(401)
+        .json({ success: success, message: 'Incorrect email or password' });
+    }
+
+    req.login(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      // console.log(user);
+
+      res.cookie('name', user.name);
+      res.cookie('email', user.email);
+      res.cookie('userId', user._id);
+      success = true;
+      var userI = { name: user.name, email: user.email };
+      //redirect to path containing user id2
+      return res.status(200).json({ success: success, user: userI });
+    });
+  })(req, res, next);
 });
 
-module.exports = authRouter;
+router.get('/logout', function (req, res) {
+  // console.log("Hello, it's me");
+  req.session.destroy(function (err) {
+    if (err) {
+      console.log(err);
+    }
+    res.clearCookie('userId');
+    res.clearCookie('name');
+    res.clearCookie('email');
+    res.clearCookie('connect.sid');
+
+    res.status(200).json({ message: 'Successfully logged out' });
+    // console.log('Hello from the other side.');
+  });
+});
+
+//auth with google
+router.get(
+  '/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+  })
+);
+
+// //auth google callback
+// router.get("/google/callback", passport.authenticate('google'), (req, res) => {
+//   res.cookie("user_id", req.user.dataValues.id);
+//   res.cookie("user_name", req.user.dataValues.userName);
+//   return res.redirect("/");
+// });
+
+// //auth with facebook
+// router.get("/facebook",
+//   passport.authenticate("facebook", {
+//     scope: ["public_profile", "email"]
+//   })
+// );
+
+// //auth facebook callback
+// router.get("/facebook/callback", passport.authenticate('facebook'), (req, res) => {
+//   res.cookie("user_id", req.user.dataValues.id);
+//   res.cookie("user_name", req.user.dataValues.userName);
+//   return res.redirect("/");
+
+// });
+
+// router.get('/meetup',
+//   passport.authenticate('meetup'),
+//   function(req, res){
+//     // The request will be redirected to Meetup for authentication, so this
+//     // function will not be called.
+//     console.log("150")
+//   });
+
+// // GET /auth/meetup/callback
+// //   Use passport.authenticate() as route middleware to authenticate the
+// //   request.  If authentication fails, the user will be redirected back to the
+// //   login page.  Otherwise, the primary route function function will be called,
+// //   which, in this example, will redirect the user to the home page.
+// router.get('/meetup/callback',
+//   passport.authenticate('meetup', { failureRedirect: '/landing' }),
+//   function(req, res) {
+//     console.log("meetup161")
+//     res.redirect('/');
+//   });
+
+module.exports = router;

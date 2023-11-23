@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/logincontext';
 import BASE_URL from '../config';
+import axios from 'axios';
 
 export default function Login(props) {
   console.log(props);
@@ -33,37 +34,40 @@ export default function Login(props) {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const response = await fetch(BASE_URL+'/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      }),
-      credentials: 'include', // Include cookies
-    });
-    // console.log(response);
-    if (response.status === 200 && response.status < 300) {
-      const json = await response.json();
-      if (json.success) {
-        props.showAlert('Logged in Success', 'success');
-        setIsLoggedIn(true);
-        navigate('/');
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/auth/login`,
+        {
+          email: credentials.email,
+          password: credentials.password,
+        },
+        { withCredentials: true }
+      );
+
+      console.log(response.status);
+
+      if (response.status === 200 && response.status < 300) {
+        const json = response.data;
+
+        if (json.success) {
+          props.showAlert('Logged in Success', 'success');
+          setIsLoggedIn(true);
+          navigate('/');
+        }
+      } 
+    } catch (error) {
+      console.error(error);
+      if (error.response && error.response.status === 401) {
+        props.showAlert('Invalid Credentials', 'danger');
+        navigate('/login');
+      } else if (error.response && error.response.status === 400) {
+        const json = error.response.data;
+        console.log(json);
+        props.showAlert(json.error, 'danger');
+        navigate('/login');
       }
-    } else if (response.status === 401) {
-      props.showAlert('Invalid Credentials', 'danger');
-      navigate('/login');
-    }
-    else if (response.status === 400) {
-   const json = await response.json();
-      console.log(json);
-      props.showAlert(json.error, 'danger');
-      navigate('/login');
     }
   }
-
 
   return (
     <>

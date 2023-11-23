@@ -1,9 +1,10 @@
 const express = require('express');
 const noteRouter = express.Router();
 const Note = require('../models/note');
-const checkAuthenticated = require('../middleware/fetchuser');
+// import authenticated
+const authenticated=require('../middleware/ensureAuthenticated.js');
 
-noteRouter.get('/', checkAuthenticated, async function (req, res) {
+noteRouter.get('/', authenticated, async function (req, res) {
   try {
     console.log(req.user.id);
     const notes = await Note.find({ user: req.user.id }).sort({ date: 'desc' });
@@ -14,7 +15,7 @@ noteRouter.get('/', checkAuthenticated, async function (req, res) {
   }
 });
 
-noteRouter.post('/add', checkAuthenticated, async function (req, res) {
+noteRouter.post('/add', authenticated, async function (req, res) {
   // console.log(req.body);
   try {
     const { title, content } = req.body;
@@ -32,7 +33,7 @@ noteRouter.post('/add', checkAuthenticated, async function (req, res) {
   }
 });
 
-noteRouter.post('/edit/:id', checkAuthenticated, async function (req, res) {
+noteRouter.post('/edit/:id', authenticated, async function (req, res) {
   try {
     const id = req.params.id;
     let note = await Note.findById(id);
@@ -58,7 +59,7 @@ noteRouter.post('/edit/:id', checkAuthenticated, async function (req, res) {
   }
 });
 
-noteRouter.post('/delete/:id', checkAuthenticated, async function (req, res) {
+noteRouter.post('/delete/:id', authenticated, async function (req, res) {
   const id = req.params.id;
   let note = await Note.findById(id);
   if (!note) {

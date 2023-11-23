@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 import BASE_URL from '../config';
 
 function Home(props) {
-
   const { isLoggedIn } = useContext(AuthContext);
   const [notesUpdated, setNotesUpdated] = useState(false);
   // const [greeting, setGreeting] = useState('');
@@ -38,29 +37,19 @@ function Home(props) {
   }, [isLoggedIn, notesUpdated]);
 
   async function getNotes() {
-    await axios
-      .get(
-        BASE_URL+`/api/notes`,
-        { withCredentials: true },
-      )
-      .then((response) => {
-        // console.log(response.data);
-        setNotes(response.data);
-        if (response.data.length === 0) {
-          setAlert('No Notes to display');
-        } else {
-          setAlert('');
-        }
-      });
+  const response = await axios.get(`${BASE_URL}/api/notes/`,{ withCredentials: true });
+
+    // console.log(response.data);
+    setNotes(response.data);
+    if (response.data.length === 0) {
+      setAlert('No Notes to display');
+    } else {
+      setAlert('');
+    }
   }
 
   async function getUser() {
-    const response = await axios.get(
-      BASE_URL+'/api/auth/getuser',
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.get(BASE_URL + '/api/auth/user',{ withCredentials: true });
     console.log(response.data);
     setUserName(response.data);
   }
@@ -69,7 +58,7 @@ function Home(props) {
     // console.log(obj);
     if (editingNote) {
       await axios.post(
-        BASE_URL+`/api/notes/edit/${editingNote._id}`,
+        BASE_URL + `/api/notes/edit/${editingNote._id}`,
         {
           title: obj.title,
           content: obj.content,
@@ -81,7 +70,7 @@ function Home(props) {
       setNotesUpdated(!notesUpdated);
     } else {
       await axios.post(
-        BASE_URL+'/api/notes/add',
+        BASE_URL + '/api/notes/add',
         {
           title: obj.title,
           content: obj.content,
@@ -95,13 +84,9 @@ function Home(props) {
 
   async function deleteNote(id) {
     console.log(id);
-    await axios.post(
-    BASE_URL+`/api/notes/delete/${id}`,
-      null,
-      {
-        withCredentials: true,
-      }
-    );
+    await axios.post(BASE_URL + `/api/notes/delete/${id}`, null, {
+      withCredentials: true,
+    });
     // getNotes();
     setNotesUpdated(!notesUpdated);
   }

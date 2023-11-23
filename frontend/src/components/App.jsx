@@ -25,7 +25,7 @@ function App() {
     <>
       <Router>
         <AuthProvider>
-        <Header />
+        <Header showAlert={showAlert}/>
         <Alert alert={alert} />
         <Routes>
           <Route exact path="/" element={<Home />} />

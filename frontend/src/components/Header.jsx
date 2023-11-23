@@ -16,6 +16,7 @@ export default function Header(props) {
         console.log(response);
         // Update isLoggedIn state to false
         setIsLoggedIn(false);
+        props.showAlert('Logged out successfully', 'success');
         navigate('/');
       })
       .catch((error) => {
