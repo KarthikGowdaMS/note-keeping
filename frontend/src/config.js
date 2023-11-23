@@ -1,3 +1,3 @@
-const BASE_URL='https://karthik-notes-keeping.azurewebsites.net'
+const BASE_URL='https://note-keeping-backend.karthikgowdams.com'
 
 export default BASE_URL;
