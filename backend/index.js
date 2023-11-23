@@ -33,7 +33,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true,
+      secure: false,
       expires: 2592000000,
       httpOnly: false,
     },
@@ -54,7 +54,7 @@ app.use(passport.session());
 // enable CORS so that browsers don't block requests.
 app.use((req, res, next) => {
   //access-control-allow-origin http://localhost:3000
-  res.header('Access-Control-Allow-Origin', 'https://witty-field-0607dc10f.4.azurestaticapps.net');
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header(
     'Access-Control-Allow-Headers',
