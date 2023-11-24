@@ -50,11 +50,11 @@ export default function Login(props) {
 
       if (response.status === 200 && response.status < 300) {
         const json = response.data;
-
+// console.log(json);
         if (json.success) {
           props.showAlert('Logged in Success', 'success');
           setIsLoggedIn(true);
-          updateUserName(json.name);
+          updateUserName(json.user.name);
           navigate('/');
         }
       }
