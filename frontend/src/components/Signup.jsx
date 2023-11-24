@@ -49,7 +49,7 @@ export default function SignUp(props) {
         if (json.success) {
           props.showAlert('Signup Success', 'success');
           setIsLoggedIn(true);
-          updateUserName(json.name);
+          updateUserName(json.user.name);
           navigate('/');
         }
       } else {
