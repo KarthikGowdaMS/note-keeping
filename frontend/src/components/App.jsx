@@ -24,8 +24,8 @@ function App() {
   return (
     <>
       <Router>
-          <UserNameProvider>
         <AuthProvider>
+          <UserNameProvider>
             <Header showAlert={showAlert} />
             <Alert alert={alert} />
             <Routes>
@@ -42,8 +42,8 @@ function App() {
               />
             </Routes>
             <Footer />
-        </AuthProvider>
           </UserNameProvider>
+        </AuthProvider>
       </Router>
     </>
   );

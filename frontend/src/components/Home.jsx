@@ -62,7 +62,7 @@ function Home(props) {
   //       }
   //     }
   useEffect(() => {
-    async function getUser() {
+        async function getUser() {
       const response = await axios.get(BASE_URL + '/auth/user', {
         withCredentials: true,
       });

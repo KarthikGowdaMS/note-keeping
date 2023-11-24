@@ -93,10 +93,11 @@ export default function Login(props) {
   // }
   async function handleOauthLogin(e) {
     e.preventDefault();
+    updateUserName('');
     window.open(`${BASE_URL}/auth/google`, '_self');
     // Wait for Google OAuth process to complete
 
-    try {
+try {
       const response = await axios.get(`${BASE_URL}/auth/google/callback`);
       // console.log(response.status);
       if (response.status === 200 && response.status < 300) {
