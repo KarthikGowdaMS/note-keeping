@@ -1,6 +1,6 @@
 exports.google = {
-	clientID: process.env.GOOGLE_CLIENT_ID,
-	clientSecret: process.env.GOOGLE_CLIENT_SECRET
+	clientID: process.env.CLIENT_ID,
+	clientSecret: process.env.CLIENT_SECRET
 };
 
 exports.facebook = {

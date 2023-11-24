@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/logincontext';
+import { UserNameContext } from '../context/namecontext';
 
 import Note from './Note';
 import CreateArea from './CreateArea';
@@ -15,7 +16,8 @@ function Home(props) {
   const [alert, setAlert] = useState('Loading Notes...');
   const [notes, setNotes] = useState([]);
   const [editingNote, setEditingNote] = useState(null);
-  const [userName, setUserName] = useState('');
+  const { setIsLoggedIn } = useContext(AuthContext);
+  const {updateUserName} = useContext(UserNameContext);
 
   // useEffect(() => {
   //   const hours = new Date().getHours();
@@ -27,32 +29,138 @@ function Home(props) {
   //     setGreeting('Good Evening');
   //   }
   // }, []);
+  // useEffect(() => {
+  //   async function getUser() {
+  //     const response = await axios.get(BASE_URL + '/auth/user', {
+  //       withCredentials: true,
+  //     });
+  //     console.log(response.data);
+  //     if (response.data.isLoggedIn) {
+  //       setIsLoggedIn(true);
+  //       setUserName(response.data.name);
+  //     } else {
+  //       setIsLoggedIn(false);
+  //     }
+  //   }
+  
+  //   if (isLoggedIn) {
+  //     getUser();
+  //     getNotes();
+  //   }
+  // }, [isLoggedIn, notesUpdated, setIsLoggedIn]);
 
-  // console.log(isLoggedIn);
+  // async function getNotes() {
+  //       const response = await axios.get(`${BASE_URL}/api/notes/`, {
+  //         withCredentials: true,
+  //       });
+    
+  //       setNotes(response.data);
+  //       if (response.data.length === 0) {
+  //         setAlert('No Notes to display');
+  //       } else {
+  //         setAlert('');
+  //       }
+  //     }
   useEffect(() => {
-    if (isLoggedIn) {
-      getUser();
-      getNotes();
+    async function getUser() {
+      const response = await axios.get(BASE_URL + '/auth/user', {
+        withCredentials: true,
+      });
+      setIsLoggedIn(response.data.isLoggedIn);
+      updateUserName(response.data.name);
     }
-  }, [isLoggedIn, notesUpdated]);
-
-  async function getNotes() {
-  const response = await axios.get(`${BASE_URL}/api/notes/`,{ withCredentials: true });
-
-    // console.log(response.data);
-    setNotes(response.data);
-    if (response.data.length === 0) {
-      setAlert('No Notes to display');
-    } else {
-      setAlert('');
+  
+    async function getNotes() {
+      const response = await axios.get(`${BASE_URL}/api/notes/`, {
+        withCredentials: true,
+      });
+  
+      setNotes(response.data);
+      if (response.data.length === 0) {
+        setAlert('No Notes to display');
+      } else {
+        setAlert('');
+      }
     }
-  }
+  
+    getUser().then(() => {
+      if (isLoggedIn) {
+        getNotes();
+      }
+    });
+  }, [isLoggedIn, notesUpdated, setIsLoggedIn, updateUserName]);
+  // useEffect(() => {
+  //   async function getUser() {
+  //     const response = await axios.get(BASE_URL + '/auth/user', {
+  //       withCredentials: true,
+  //     });
+  //     console.log(response.data);
+  //     if (response.data.isLoggedIn) {
+  //       setIsLoggedIn(true);
+  //       setUserName(response.data.name);
+  //     } else {
+  //       setIsLoggedIn(false);
+  //     }
+  //   }
+  
+  //   async function getNotes() {
+  //     const response = await axios.get(`${BASE_URL}/api/notes/`, {
+  //       withCredentials: true,
+  //     });
+  
+  //     // console.log(response.data);
+  //     setNotes(response.data);
+  //     if (response.data.length === 0) {
+  //       setAlert('No Notes to display');
+  //     } else {
+  //       setAlert('');
+  //     }
+  //   }
+  
+  //   // Call getUser and getNotes when the component mounts
+  //   getUser();
+  //   getNotes();
+  // }, [notesUpdated, setIsLoggedIn]); // Remove isLoggedIn from the dependency array
+  // useEffect(() => {
+  //   async function getUser() {
+  //     try {
+  //       const response = await axios.get(BASE_URL + '/auth/user', {
+  //         withCredentials: true,
+  //       });
+  //       // console.log(response.data);
+  //       if (response.data.isLoggedIn) {
+  //         setIsLoggedIn(true);
+  //         setUserName(response.data.name);
+  //         getNotes(); // Move getNotes call here
+  //       } else {
+  //         setIsLoggedIn(false);
+  //       }
+  //     } catch (error) {
+  //       // console.log(error);
+  //       setIsLoggedIn(false);
+  //     }
+  //   }
 
-  async function getUser() {
-    const response = await axios.get(BASE_URL + '/api/auth/user',{ withCredentials: true });
-    console.log(response.data);
-    setUserName(response.data);
-  }
+  //   async function getNotes() {
+  //     const response = await axios.get(`${BASE_URL}/api/notes/`, {
+  //       withCredentials: true,
+  //     });
+  
+  //     setNotes(response.data);
+  //     if (response.data.length === 0) {
+  //       setAlert('No Notes to display');
+  //     } else {
+  //       setAlert('');
+  //     }
+  //   }
+
+  //   // Call getUser when the component mounts
+  //   getUser();
+  // }, [notesUpdated, setIsLoggedIn]); // Remove isLoggedIn from the dependency array
+
+  
+
+
 
   async function addNote(obj) {
     // console.log(obj);
@@ -113,7 +221,7 @@ function Home(props) {
         </>
       ) : (
         <div>
-          <h1 className="greeting">hello {userName}</h1>
+          <h1 className="greeting">hello {localStorage.getItem('name')}</h1>
           <CreateArea addNote={addNote} editingNote={editingNote} />
           {notes.length === 0 && (
             <div className="no-note">

@@ -2,7 +2,7 @@ import React from 'react';
 
 export const Alert = (props) => {
     const { alert } = props;
-    console.log(alert);
+    // console.log(alert);
     return (
         <>
             <div style={{height: '50px'}}>

@@ -1,15 +1,17 @@
 import React from 'react';
-import { useState, useContext } from 'react';
+import { useState, useContext} from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/logincontext';
+import { UserNameContext } from '../context/namecontext';
 import BASE_URL from '../config';
 import axios from 'axios';
 
 export default function Login(props) {
-  console.log(props);
+  // console.log(props);
   const navigate = useNavigate();
   const { setIsLoggedIn } = useContext(AuthContext);
+  const { updateUserName } = useContext(UserNameContext);
 
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
@@ -36,7 +38,7 @@ export default function Login(props) {
 
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/auth/login`,
+        `${BASE_URL}/auth/login`,
         {
           email: credentials.email,
           password: credentials.password,
@@ -44,8 +46,59 @@ export default function Login(props) {
         { withCredentials: true }
       );
 
-      console.log(response.status);
+      // console.log(response.status);
 
+      if (response.status === 200 && response.status < 300) {
+        const json = response.data;
+
+        if (json.success) {
+          props.showAlert('Logged in Success', 'success');
+          setIsLoggedIn(true);
+          updateUserName(json.name);
+          navigate('/');
+        }
+      }
+    } catch (error) {
+      // console.error(error);
+      if (error.response && error.response.status === 401) {
+        props.showAlert('Invalid Credentials', 'danger');
+        navigate('/login');
+      } else if (error.response && error.response.status === 400) {
+        const json = error.response.data;
+        // console.log(json);
+        props.showAlert(json.error, 'danger');
+        navigate('/login');
+      }
+    }
+  }
+  // async function handleOauthLogin(e) {
+  //   e.preventDefault();
+  //   window.open(`${BASE_URL}/auth/google`, '_self');
+  //   try {
+  //     const response = await axios.get(`${BASE_URL}/login/success`);
+  //     console.log(response.status);
+  //     if (response.status === 200 && response.status < 300) {
+  //       const json = response.data;
+
+  //       if (json.success) {
+  //         props.showAlert('Logged in Success', 'success');
+  //         setIsLoggedIn(true);
+  //         navigate('/');
+  //       }
+  //     }
+  //     const data = response.data;
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // }
+  async function handleOauthLogin(e) {
+    e.preventDefault();
+    window.open(`${BASE_URL}/auth/google`, '_self');
+    // Wait for Google OAuth process to complete
+
+    try {
+      const response = await axios.get(`${BASE_URL}/auth/google/callback`);
+      // console.log(response.status);
       if (response.status === 200 && response.status < 300) {
         const json = response.data;
 
@@ -54,18 +107,9 @@ export default function Login(props) {
           setIsLoggedIn(true);
           navigate('/');
         }
-      } 
-    } catch (error) {
-      console.error(error);
-      if (error.response && error.response.status === 401) {
-        props.showAlert('Invalid Credentials', 'danger');
-        navigate('/login');
-      } else if (error.response && error.response.status === 400) {
-        const json = error.response.data;
-        console.log(json);
-        props.showAlert(json.error, 'danger');
-        navigate('/login');
       }
+    } catch (error) {
+      // console.error('Error:', error);
     }
   }
 
@@ -118,6 +162,17 @@ export default function Login(props) {
             </div>
           </div>
         </form>
+        <div className="row mb-6">
+          <div className="col col-md-4">
+            <button
+              onClick={handleOauthLogin}
+              className="btn btn-primary login-button btn-submit"
+              type="submit"
+            >
+              Sign In With Google
+            </button>
+          </div>
+        </div>
       </div>
       <p className="existing">
         New User?{' '}

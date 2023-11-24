@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Footer from './Footer';
 import Home from './Home';
@@ -7,33 +7,43 @@ import SignUp from './Signup';
 import Header from './Header';
 import { AuthProvider } from '../context/logincontext';
 import { Alert } from './Alert';
-
+import { UserNameProvider } from '../context/namecontext';
 
 function App() {
   const [alert, setalert] = useState(null);
-  function showAlert(message,type) {
+  function showAlert(message, type) {
     setalert({
       msg: message,
-      type: type
+      type: type,
     });
     setTimeout(() => {
-      setalert(null)
+      setalert(null);
     }, 1500);
   }
 
   return (
     <>
       <Router>
+          <UserNameProvider>
         <AuthProvider>
-        <Header showAlert={showAlert}/>
-        <Alert alert={alert} />
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route exact path="/login" element={<Login showAlert={showAlert}/>}  />
-          <Route exact path="/signup" element={<SignUp showAlert={showAlert}/>} />
-        </Routes>
-        <Footer />
+            <Header showAlert={showAlert} />
+            <Alert alert={alert} />
+            <Routes>
+              <Route exact path="/" element={<Home />} />
+              <Route
+                exact
+                path="/login"
+                element={<Login showAlert={showAlert} />}
+              />
+              <Route
+                exact
+                path="/signup"
+                element={<SignUp showAlert={showAlert} />}
+              />
+            </Routes>
+            <Footer />
         </AuthProvider>
+          </UserNameProvider>
       </Router>
     </>
   );

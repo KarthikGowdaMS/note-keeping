@@ -50,7 +50,7 @@ passport.use(
           email: email,
         }).then(function (user) {
           if (user.length > 0) {
-            console.log('signupMessage', 'That email is already taken.');
+            // console.log('signupMessage', 'That email is already taken.');
 
             return done(null, false, {
               message: 'That email is already taken.',
@@ -89,15 +89,15 @@ passport.use(
       try {
         const user = await User.findOne({ email: email });
         const isValidPassword = function (userpass, password) {
-            return bCrypt.compareSync(password, userpass);
-          };
+          return bCrypt.compareSync(password, userpass);
+        };
 
         if (!user) {
           return done(null, false, { message: 'User does not exist.' });
         }
         console.log('user', user);
-        
-        if (!isValidPassword(user.password,password)) {
+
+        if (!isValidPassword(user.password, password)) {
           return done(null, false, { message: 'Incorrect password.' });
         }
         return done(null, user);
@@ -151,51 +151,47 @@ passport.use(
 //   )
 // );
 
-// //passport config for google signin
-// passport.use(new GoogleStrategy({
-//         clientID: keys.google.clientID,
-//         clientSecret: keys.google.clientSecret,
-//         callbackURL: "/auth/google/callback"
-//     }, function(accessToken, refreshToken, profile, done) {
-//         console.log("Email" + profile.emails[0].value);
-//         console.log("ID: " + profile.id);
-//         console.log("Display name: " + profile.displayName);
-//         console.log("given name" + profile.name.givenName);
-//         console.log("google passport callback");
+//passport config for google signin
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: keys.google.clientID,
+      clientSecret: keys.google.clientSecret,
+      userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
+      callbackURL: '/auth/google/callback',
+    },
+    function (accessToken, refreshToken, profile, done) {
+      // console.log("Email: " + profile.emails[0].value);
+      // console.log("ID: " + profile.id);
+      // console.log("Display name: " + profile.displayName);
+      // console.log("given name: " + profile.name.givenName);
+      // console.log("google passport callback");
 
-//         //done(null, { id: profile.id });
-//         process.nextTick(function() {
-//             User.findOne({
-//                 where: {
-//                     socialID: profile.id
-//                 }
-//             }).then(function(user) {
-//                 if (user) {
-//                     console.log('Already signed in.');
-//                     return done(null, user);
-//                 } else {
-//                     User.create({
-//                         userName: profile.displayName,
-//                         firstName: profile.name.givenName,
-//                         lastName: profile.name.familyName,
-//                         email: profile.emails[0].value,
-//                         authMethod: "google",
-//                         socialID: profile.id
-
-//                     }).then(function(dbUser, created) {
-//                         if (!dbUser) {
-//                             return done(null, false);
-//                         } else {
-//                             console.log(dbUser.dataValues);
-//                             return done(null, dbUser);
-//                         }
-//                     })
-//                 }
-
-//             })
-//         });
-//     }
-// ));
+      //done(null, { id: profile.id });
+      process.nextTick(async function () {
+        const user = await User.findOne({ socialID: profile.id });
+        if (user) {
+          console.log('Already signed in.');
+          return done(null, user);
+        } else {
+          User.create({
+            name: profile.displayName,
+            email: profile.emails[0].value,
+            authMethod: 'google',
+            socialID: profile.id,
+          }).then(function (dbUser, created) {
+            if (!dbUser) {
+              return done(null, false);
+            } else {
+              // console.log(dbUser);
+              return done(null, dbUser);
+            }
+          });
+        }
+      });
+    }
+  )
+);
 
 // //passport config for facebook signin
 // passport.use(new FacebookStrategy({

@@ -44,7 +44,7 @@ app.use(
 mongoose.Promise = Promise;
 //change this to your own mongo collection
 mongoose.connect(
-  'mongodb+srv://karthikgowdams27:y3ci0X54Br0ixV2g@cluster0.kbtc8ne.mongodb.net/testDB',{useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
+  'mongodb+srv://karthikgowdams27:ukA3eKYhwCCQlGK1@root-cluster.ppsjecp.mongodb.net/noteDB',{useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
 );
 
 // Init passport authentication
@@ -55,7 +55,8 @@ app.use(passport.session());
 // enable CORS so that browsers don't block requests.
 app.use((req, res, next) => {
   //access-control-allow-origin http://localhost:3000
-  res.header('Access-Control-Allow-Origin', 'https://note-keeping.karthikgowdams.com');
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  // res.header('Access-Control-Allow-Origin', 'https://note-keeping.karthikgowdams.com');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header(
     'Access-Control-Allow-Headers',
@@ -68,7 +69,7 @@ app.use((req, res, next) => {
 const authRoutes = require('./routes/auth');
 const noteRoutes = require('./routes/notes');
 
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 // Start the API server
 app.listen(PORT, function () {

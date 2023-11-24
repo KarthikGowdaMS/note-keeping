@@ -6,8 +6,7 @@ import axios from 'axios';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import BASE_URL from '../config';
-
-
+import { UserNameContext } from '../context/namecontext';
 
 export default function SignUp(props) {
   const { setIsLoggedIn } = useContext(AuthContext);
@@ -16,6 +15,7 @@ export default function SignUp(props) {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [samePassword, setSamePassword] = useState(true);
+  const { updateUserName } = useContext(UserNameContext);
 
   const [credentials, setCredentials] = useState({
     name: '',
@@ -29,10 +29,10 @@ export default function SignUp(props) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-  
+
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/auth/signup`,
+        `${BASE_URL}/auth/signup`,
         {
           name: credentials.name,
           email: credentials.email,
@@ -40,15 +40,16 @@ export default function SignUp(props) {
         },
         { withCredentials: true } // Include this in the request config
       );
-  
+
       console.log(response);
-  
+
       if (response.status === 200 && response.status < 300) {
         const json = response.data;
-  
+
         if (json.success) {
           props.showAlert('Signup Success', 'success');
           setIsLoggedIn(true);
+          updateUserName(json.name);
           navigate('/');
         }
       } else {
@@ -104,10 +105,13 @@ export default function SignUp(props) {
       setSamePassword(false);
     }
   }
+  async function handleOauthLogin(e) {
+    e.preventDefault();
+    window.open(`${BASE_URL}/auth/google`, '_self');
+  }
 
   return (
     <>
-
       <h1 className="auth-header">Sign Up</h1>
       <div className="login-container">
         <form onSubmit={handleSubmit}>
@@ -179,6 +183,17 @@ export default function SignUp(props) {
             </div>
           </div>
         </form>
+        <div className="row mb-6">
+          <div className="col col-md-4">
+            <button
+              onClick={handleOauthLogin}
+              className="btn btn-primary login-button btn-submit"
+              type="submit"
+            >
+              Sign Up With Google
+            </button>
+          </div>
+        </div>
       </div>
       <p className="existing">
         Already have an account?{' '}

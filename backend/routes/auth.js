@@ -7,21 +7,45 @@ const GoogleStrategy = require('passport-google-oauth20');
 const User = require('../models/user.js');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated.js');
 
-router.get('/user', ensureAuthenticated, async (req, res) => {
-  const id = req.session.passport.user;
+// router.get('/user' ,async (req, res) => {
 
-  // call db and find user by currenUser which is user id
-  // get username and email
+//   const id = req.session.passport.user;
 
-  // console.log('hello', currentUser);
-  // console.log(id);
-  const user = await User.findById(id);
-  // const user = {
-  //   loggedIn: true,
-  //   name: dbUser.name,
-  //   email: dbUser.email,
-  // };
-  res.json(user.name);
+//   // call db and find user by currenUser which is user id
+//   // get username and email
+
+//   // console.log('hello', currentUser);
+//   // console.log(id);
+//   const user = await User.findById(id);
+//   const response = {
+//     isLoggedIn: true,
+//     name: user.name,
+//     email: user.email,
+//   };
+
+//   res.json(response);
+
+// });
+router.get('/user' ,async (req, res) => {
+  
+  const id = req.session.passport ? req.session.passport.user : null;
+
+  if (id) {
+    const user = await User.findById(id);
+    if (user) {
+      const response = {
+        isLoggedIn: true,
+        name: user.name,
+        email: user.email,
+      };
+
+      res.json(response);
+    } else {
+      res.json({ isLoggedIn: false });
+    }
+  } else {
+    res.json({ isLoggedIn: false });
+  }
 });
 
 //local auth signup
@@ -115,12 +139,38 @@ router.get(
 );
 
 // //auth google callback
-// router.get("/google/callback", passport.authenticate('google'), (req, res) => {
-//   res.cookie("user_id", req.user.dataValues.id);
-//   res.cookie("user_name", req.user.dataValues.userName);
-//   return res.redirect("/");
-// });
+router.get('/google/callback', passport.authenticate('google',{
+  successRedirect: '/auth/login/success',
+  failureRedirect: '/auth/login/failed',
+}), (req, res) => {
+  console.log(req.user);
+  // res.cookie("email", req.user.email);
+  // res.cookie("userId", req.user.id);
+  // res.cookie("name", req.user.name);
+});
 
+router.get('/login/success', (req, res) => {
+  let success = false;
+  if (req.user) {
+    // console.log("hello")
+    // set the cookie set the user as authenticated
+    res.cookie('email', req.user.email);
+    res.cookie('userId', req.user.id);
+    res.cookie('name', req.user.name);
+
+    success = true;
+    var userI = { name: req.user.name, email: req.user.email };
+    //redirect to path containing user id2
+    // return res.status(200).json({ success: success, user: userI });
+    // req.session.loggedIn = true;
+    res.redirect(`http://localhost:3000/`);
+  } else {
+    return res
+      .status(401)
+      .json({ success: success, message: 'Incorrect email or password' });
+  }
+  // res.redirect("/");
+});
 // //auth with facebook
 // router.get("/facebook",
 //   passport.authenticate("facebook", {
