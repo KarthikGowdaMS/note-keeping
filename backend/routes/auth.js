@@ -163,7 +163,7 @@ router.get('/login/success', (req, res) => {
     //redirect to path containing user id2
     // return res.status(200).json({ success: success, user: userI });
     // req.session.loggedIn = true;
-    res.redirect(`http://localhost:3000/`);
+    res.redirect(`https://note-keeping.karthikgowdams.com/`);
   } else {
     return res
       .status(401)
