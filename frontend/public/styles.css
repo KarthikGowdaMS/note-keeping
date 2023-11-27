@@ -7,41 +7,45 @@ html {
   font-family: 'Montserrat', sans-serif;
 }
 body {
-  background: #eee;
-  background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+  background-color: black;
+  background-image: url("https://www.transparenttextures.com/patterns/light-grey-floral-motif.png");
   /* overflow: hidden; */
+  /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
 a {
   text-decoration: none;
 }
 
 header {
-  background-color: #f5ba13;
+
   width: 100%;
   padding: 16px 32px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
 }
 .greeting {
   margin-top: 1vh;
-  color: white;
+  color: #FFE79B;
   text-align: center;
   font-weight: bold;
   font-family: 'McLaren', cursive;
-color:#333;
 }
 
 .nav-heading {
   display: inline-block;
-  color: #fff;
+  color: #FFE79B;
   font-family: 'McLaren', cursive;
   font-weight: 200;
   text-decoration: none;
 }
 
 footer {
-  position: fixed;
+  /* position: fixed; */
+  /* position: relative; */
   text-align: center;
-  bottom: 0;
+  /* position: absolute; */
+  /* bottom: 0; */
+  /* top: 100vh; */
+  /* top: 92vh; */
   width: 100%;
   margin-top: 20px;
   height: 2.5rem;
@@ -53,7 +57,7 @@ footer p {
 .note {
   background: #fff;
   border-radius: 7px;
-  box-shadow: 0 2px 5px #ccc;
+  box-shadow: 0 2px 5px  rgb(138, 137, 137) ;
   padding: 10px;
   width: 240px;
   margin: 16px;
@@ -106,8 +110,8 @@ form.create-note button {
   position: absolute;
   right: 18px;
   bottom: -18px;
-  background: #f5ba13;
-  color: #fff;
+  background:#f5ba13;
+  color:#f5ba13;
   border: none;
   border-radius: 50%;
   width: 36px;
@@ -118,11 +122,12 @@ form.create-note button {
 }
 
 .auth-header {
+  color: #FFE79B;
   margin-top: 20px;
   text-align: center;
 }
 .header {
-  color: #f5ba13;
+  color: #FFE79B;
   font-weight: bold;
   margin-top: 20px;
   font-size: 3rem;
@@ -136,7 +141,7 @@ form.create-note button {
 
 .link {
   font-weight: bold;
-  color: #f5ba13;
+  color: #FFE79B;
   text-decoration: none;
   font-size: large;
 }
@@ -167,13 +172,13 @@ form.create-note button {
   margin: 0 auto;
   padding: 20px;
   border-radius: 5px;
-  background: #fff;
+  /* background: #333; */
   box-shadow: 0 1px 5px rgb(138, 137, 137);
   border: none;
   font-size: 1.1em;
   font-family: inherit;
   outline: 0;
-  color: #333;
+
   height: 50px;
   transition: 0.2s ease-in-out;
 }
@@ -183,7 +188,6 @@ form.create-note button {
   /* float: right; */
 
   box-shadow: 0 0 5px rgb(138, 137, 137);
-
   /* margin-right: 10px; */
   background: white;
   border: none;
@@ -193,27 +197,29 @@ form.create-note button {
 
 .btn-primary {
   --bs-btn-color: #fff;
-  --bs-btn-bg: #f5ba13;
-  --bs-btn-border-color: #f5ba13;
+  --bs-btn-bg: #e50914;
+  --bs-btn-border-color: #e50914;
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #f5ba13;
-  --bs-btn-hover-border-color: #f5ba13;
+  --bs-btn-hover-bg: #e50914;
+  --bs-btn-hover-border-color: #e50914;
   --bs-btn-focus-shadow-rgb: 49, 132, 253;
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #f5ba13;
-  --bs-btn-active-border-color: #f5ba13;
+  --bs-btn-active-bg: #e50914;
+  --bs-btn-active-border-color: #e50914;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #f5ba13;
-  --bs-btn-disabled-border-color: #f5ba13;
+  --bs-btn-disabled-bg: #e50914;
+  --bs-btn-disabled-border-color: #e50914;
 }
 
 .existing {
+  /* margin-top: 3vh; */
+  color: white;
   text-align: center;
 }
 
 .login-button {
-  background-color: #f5ba13;
+  background-color:#e50914;
   border: none;
   color: white;
   font-size: 16px;
@@ -221,11 +227,15 @@ form.create-note button {
   padding: 10px 24px;
   width: 100%;
   cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+
 }
 
 .error {
   text-align: center;
-  color: red;
+  color: #e50914;
   font-size: 1.1em;
   margin-bottom: 10px;
   white-space: pre-wrap;
@@ -246,10 +256,22 @@ form.create-note button {
 }
 .no-note {
   text-align: center;
-  color: #f5ba13;
+  color: #FFE79B;
   font-size: 1.5rem;
 }
+.fa-google{
+  font-size: 1.2rem;
+  margin-right: 2vw;
+}
+.fa-facebook{
+  font-size: 1.2rem;
+  margin-right: 1vw;
+}
 
+.fa-github{
+  font-size: 1.2rem;
+  margin-right: 2vw;
+}
 @media only screen and (max-width: 720px) {
   form.create-note {
     position: relative;
@@ -268,12 +290,8 @@ form.create-note button {
   header {
     padding: 16px 16px;
   }
-  .greeting {
-    /* font-size: 1.3rem; */
-    text-align: left;
-    width: auto;
-  }
-  .logout {
-    margin-top: 0vh;
-  }
+.greeting{
+  margin-top: 0;
+}
+
 }

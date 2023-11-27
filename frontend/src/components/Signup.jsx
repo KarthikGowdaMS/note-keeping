@@ -109,6 +109,14 @@ export default function SignUp(props) {
     e.preventDefault();
     window.open(`${BASE_URL}/auth/google`, '_self');
   }
+  async function handleFOauthLogin(e) {
+    e.preventDefault();
+    window.open(`${BASE_URL}/auth/facebook`, '_self');
+  }
+  async function handleGiOauthLogin(e) {
+    e.preventDefault();
+    window.open(`${BASE_URL}/auth/github`, '_self');
+  }
 
   return (
     <>
@@ -148,7 +156,7 @@ export default function SignUp(props) {
                   placeholder="Password"
                 />
                 <button
-                  className="btn password-button"
+                  className="btn btn-light password-button"
                   type="button"
                   onClick={togglePasswordVisibility}
                 >
@@ -190,7 +198,29 @@ export default function SignUp(props) {
               className="btn btn-primary login-button btn-submit"
               type="submit"
             >
-              Sign Up With Google
+              <i className="fa-brands fa-google"></i>Sign Up With Google
+            </button>
+          </div>
+        </div>
+        <div className="row mb-6">
+          <div className="col col-md-4">
+            <button
+              onClick={handleFOauthLogin}
+              className="btn btn-primary login-button btn-submit"
+              type="submit"
+            >
+              <i className="fa-brands fa-facebook"></i>Sign Up With Facebook
+            </button>
+          </div>
+        </div>
+        <div className="row mb-6">
+          <div className="col col-md-4">
+            <button
+              onClick={handleGiOauthLogin}
+              className="btn btn-primary login-button btn-submit"
+              type="submit"
+            >
+              <i className="fa-brands fa-github"></i>Sign Up With Github
             </button>
           </div>
         </div>

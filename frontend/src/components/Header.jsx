@@ -36,7 +36,7 @@ export default function Header(props) {
         <>
           <div className="btn-container logout">
             <Link
-              className="btn btn-light nav-btn"
+              className="btn btn-primary nav-btn"
               to="/"
               onClick={handleLogout}
             >
@@ -46,11 +46,11 @@ export default function Header(props) {
         </>
       ) : (
         <div className="btn-container">
-          <Link className="btn btn-light nav-btn" to="/login">
-            Login
+          <Link className="btn btn-primary nav-btn" to="/login">
+            Sign In
           </Link>
-          <Link className="btn btn-light nav-btn" to="/signup">
-            SignUp
+          <Link className="btn btn-primary nav-btn" to="/signup">
+            Sign Up
           </Link>
         </div>
       )}

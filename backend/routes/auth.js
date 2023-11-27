@@ -26,8 +26,7 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated.js');
 //   res.json(response);
 
 // });
-router.get('/user' ,async (req, res) => {
-  
+router.get('/user', async (req, res) => {
   const id = req.session.passport ? req.session.passport.user : null;
 
   if (id) {
@@ -139,15 +138,19 @@ router.get(
 );
 
 // //auth google callback
-router.get('/google/callback', passport.authenticate('google',{
-  successRedirect: '/auth/login/success',
-  failureRedirect: '/auth/login/failed',
-}), (req, res) => {
-  console.log(req.user);
-  // res.cookie("email", req.user.email);
-  // res.cookie("userId", req.user.id);
-  // res.cookie("name", req.user.name);
-});
+router.get(
+  '/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/auth/login/success',
+    failureRedirect: '/auth/login/failed',
+  }),
+  (req, res) => {
+    console.log(req.user);
+    // res.cookie("email", req.user.email);
+    // res.cookie("userId", req.user.id);
+    // res.cookie("name", req.user.name);
+  }
+);
 
 router.get('/login/success', (req, res) => {
   let success = false;
@@ -160,10 +163,12 @@ router.get('/login/success', (req, res) => {
 
     success = true;
     var userI = { name: req.user.name, email: req.user.email };
-    //redirect to path containing user id2
+
     // return res.status(200).json({ success: success, user: userI });
     // req.session.loggedIn = true;
     res.redirect(`https://note-keeping.karthikgowdams.com/`);
+    // res.redirect(`http://192.168.0.103:3000`);
+    // res.redirect(`http://localhost:3000/`);
   } else {
     return res
       .status(401)
@@ -172,19 +177,42 @@ router.get('/login/success', (req, res) => {
   // res.redirect("/");
 });
 // //auth with facebook
-// router.get("/facebook",
-//   passport.authenticate("facebook", {
-//     scope: ["public_profile", "email"]
-//   })
-// );
+router.get(
+  '/facebook',
+  passport.authenticate('facebook', {
+    scope: ['public_profile', 'email'],
+  })
+);
 
 // //auth facebook callback
-// router.get("/facebook/callback", passport.authenticate('facebook'), (req, res) => {
-//   res.cookie("user_id", req.user.dataValues.id);
-//   res.cookie("user_name", req.user.dataValues.userName);
-//   return res.redirect("/");
+router.get(
+  '/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/auth/user',
+    failureRedirect: '/auth/login/failed',
+  }),
+  (req, res) => {
+    console.log(req.user);
+  }
+);
 
-// });
+router.get(
+  '/github',
+  passport.authenticate('github', { scope: ['user:email'] })
+);
+
+router.get(
+  '/github/callback',
+  passport.authenticate('github', {
+    failureRedirect: '/auth/login/failed',
+    successRedirect: '/auth/login/success',
+  }),
+  function (req, res) {
+    // Successful authentication, redirect home.
+    // res.redirect('/');
+    console.log(req.user);
+  }
+);
 
 // router.get('/meetup',
 //   passport.authenticate('meetup'),

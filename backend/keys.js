@@ -12,3 +12,8 @@ exports.meetup = {
 	consumerKey: process.env.MEETUP_APP_KEY,
 	consumerSecret: process.env.MEETUP_APP_SECRET
 }
+
+exports.github = {
+	clientID: process.env.GITHUB_CLIENT_ID,
+	clientSecret: process.env.GITHUB_CLIENT_SECRET
+}

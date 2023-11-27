@@ -1,246 +1,130 @@
-import React, { useEffect, useState } from 'react';
-import { useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { AuthContext } from '../context/logincontext';
 import { UserNameContext } from '../context/namecontext';
-
 import Note from './Note';
 import CreateArea from './CreateArea';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
 import BASE_URL from '../config';
 
 function Home(props) {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  const { updateUserName } = useContext(UserNameContext);
   const [notesUpdated, setNotesUpdated] = useState(false);
-  // const [greeting, setGreeting] = useState('');
   const [alert, setAlert] = useState('Loading Notes...');
   const [notes, setNotes] = useState([]);
   const [editingNote, setEditingNote] = useState(null);
-  const { setIsLoggedIn } = useContext(AuthContext);
-  const {updateUserName} = useContext(UserNameContext);
+  const [triggerUpdate, setTriggerUpdate] = useState(false);
+  const [greeting, setGreeting] = useState('');
+  const renderWelcome = () => (
+    <>
+      <h1 className="header">Welcome to KG Notes</h1>
+      <div className="link-container">
+        <Link className="auth-link link" to="/login">
+          Login
+        </Link>
+        <Link className="auth-link link" to="/signup">
+          SignUp
+        </Link>
+      </div>
+    </>
+  );
 
-  // useEffect(() => {
-  //   const hours = new Date().getHours();
-  //   if (hours >= 0 && hours < 12) {
-  //     setGreeting('Good Morning');
-  //   } else if (hours >= 12 && hours < 16) {
-  //     setGreeting('Good Afternoon');
-  //   } else {
-  //     setGreeting('Good Evening');
-  //   }
-  // }, []);
-  // useEffect(() => {
-  //   async function getUser() {
-  //     const response = await axios.get(BASE_URL + '/auth/user', {
-  //       withCredentials: true,
-  //     });
-  //     console.log(response.data);
-  //     if (response.data.isLoggedIn) {
-  //       setIsLoggedIn(true);
-  //       setUserName(response.data.name);
-  //     } else {
-  //       setIsLoggedIn(false);
-  //     }
-  //   }
-  
-  //   if (isLoggedIn) {
-  //     getUser();
-  //     getNotes();
-  //   }
-  // }, [isLoggedIn, notesUpdated, setIsLoggedIn]);
+  const renderLoggedIn = () => (
+    <div>
+      <h1 className="greeting">
+        {greeting}, {localStorage.getItem('name')}
+      </h1>
+      <CreateArea addNote={addOrUpdateNote} editingNote={editingNote} />
+      {notes.length === 0 && (
+        <div className="no-note">
+          <h1>{alert}</h1>
+        </div>
+      )}
+      {notes.map((note) => (
+        <Note
+          deleteNote={deleteNote}
+          editNote={editNote}
+          key={note._id}
+          id={note._id}
+          note={note}
+        />
+      ))}
+    </div>
+  );
 
-  // async function getNotes() {
-  //       const response = await axios.get(`${BASE_URL}/api/notes/`, {
-  //         withCredentials: true,
-  //       });
-    
-  //       setNotes(response.data);
-  //       if (response.data.length === 0) {
-  //         setAlert('No Notes to display');
-  //       } else {
-  //         setAlert('');
-  //       }
-  //     }
   useEffect(() => {
-        async function getUser() {
-      const response = await axios.get(BASE_URL + '/auth/user', {
-        withCredentials: true,
-      });
-      setIsLoggedIn(response.data.isLoggedIn);
-      updateUserName(response.data.name);
-    }
-  
-    async function getNotes() {
-      const response = await axios.get(`${BASE_URL}/api/notes/`, {
-        withCredentials: true,
-      });
-  
-      setNotes(response.data);
-      if (response.data.length === 0) {
-        setAlert('No Notes to display');
-      } else {
-        setAlert('');
+    async function fetchData() {
+      try {
+        const userResponse = await axios.get(BASE_URL + '/auth/user', {
+          withCredentials: true,
+        });
+        setIsLoggedIn(userResponse.data.isLoggedIn);
+        updateUserName(userResponse.data.name);
+
+        if (userResponse.data.isLoggedIn || triggerUpdate) {
+          const notesResponse = await axios.get(`${BASE_URL}/api/notes/`, {
+            withCredentials: true,
+          });
+          setNotes(notesResponse.data);
+          setAlert(
+            notesResponse.data.length === 0 ? 'No Notes to display' : ''
+          );
+        }
+      } catch (error) {
+        setIsLoggedIn(false);
       }
     }
-  
-    getUser().then(() => {
-      if (isLoggedIn) {
-        getNotes();
-      }
-    });
-  }, [isLoggedIn, notesUpdated, setIsLoggedIn, updateUserName]);
-  // useEffect(() => {
-  //   async function getUser() {
-  //     const response = await axios.get(BASE_URL + '/auth/user', {
-  //       withCredentials: true,
-  //     });
-  //     console.log(response.data);
-  //     if (response.data.isLoggedIn) {
-  //       setIsLoggedIn(true);
-  //       setUserName(response.data.name);
-  //     } else {
-  //       setIsLoggedIn(false);
-  //     }
-  //   }
-  
-  //   async function getNotes() {
-  //     const response = await axios.get(`${BASE_URL}/api/notes/`, {
-  //       withCredentials: true,
-  //     });
-  
-  //     // console.log(response.data);
-  //     setNotes(response.data);
-  //     if (response.data.length === 0) {
-  //       setAlert('No Notes to display');
-  //     } else {
-  //       setAlert('');
-  //     }
-  //   }
-  
-  //   // Call getUser and getNotes when the component mounts
-  //   getUser();
-  //   getNotes();
-  // }, [notesUpdated, setIsLoggedIn]); // Remove isLoggedIn from the dependency array
-  // useEffect(() => {
-  //   async function getUser() {
-  //     try {
-  //       const response = await axios.get(BASE_URL + '/auth/user', {
-  //         withCredentials: true,
-  //       });
-  //       // console.log(response.data);
-  //       if (response.data.isLoggedIn) {
-  //         setIsLoggedIn(true);
-  //         setUserName(response.data.name);
-  //         getNotes(); // Move getNotes call here
-  //       } else {
-  //         setIsLoggedIn(false);
-  //       }
-  //     } catch (error) {
-  //       // console.log(error);
-  //       setIsLoggedIn(false);
-  //     }
-  //   }
 
-  //   async function getNotes() {
-  //     const response = await axios.get(`${BASE_URL}/api/notes/`, {
-  //       withCredentials: true,
-  //     });
-  
-  //     setNotes(response.data);
-  //     if (response.data.length === 0) {
-  //       setAlert('No Notes to display');
-  //     } else {
-  //       setAlert('');
-  //     }
-  //   }
+    fetchData();
+    setTriggerUpdate(false); // Reset trigger after fetching
+  }, [isLoggedIn, setIsLoggedIn, updateUserName, triggerUpdate]);
 
-  //   // Call getUser when the component mounts
-  //   getUser();
-  // }, [notesUpdated, setIsLoggedIn]); // Remove isLoggedIn from the dependency array
+  useEffect(() => {
+    const hours = new Date().getHours();
+    let greetingMsg = '';
 
-  
-
-
-
-  async function addNote(obj) {
-    // console.log(obj);
-    if (editingNote) {
-      await axios.post(
-        BASE_URL + `/api/notes/edit/${editingNote._id}`,
-        {
-          title: obj.title,
-          content: obj.content,
-        },
-        { withCredentials: true }
-      );
-      setEditingNote(null);
-      // getNotes();
-      setNotesUpdated(!notesUpdated);
+    if (hours >= 0 && hours < 12) {
+      greetingMsg = 'Good Morning';
+    } else if (hours >= 12 && hours < 18) {
+      greetingMsg = 'Good Afternoon';
     } else {
-      await axios.post(
-        BASE_URL + '/api/notes/add',
-        {
-          title: obj.title,
-          content: obj.content,
-        },
-        { withCredentials: true }
-      );
-      // getNotes();
-      setNotesUpdated(!notesUpdated);
+      greetingMsg = 'Good Evening';
     }
-  }
 
-  async function deleteNote(id) {
-    console.log(id);
+    setGreeting(greetingMsg);
+  }, []);
+
+  const addOrUpdateNote = async (obj) => {
+    let endpoint = '/api/notes/add';
+    let data = { title: obj.title, content: obj.content };
+
+    if (editingNote) {
+      endpoint = `/api/notes/edit/${editingNote._id}`;
+      data = { ...data, _id: editingNote._id };
+    }
+
+    await axios.post(BASE_URL + endpoint, data, { withCredentials: true });
+    setEditingNote(null);
+    setNotesUpdated(!notesUpdated);
+    setTriggerUpdate(true); // Trigger update after add/update action
+  };
+
+  const deleteNote = async (id) => {
     await axios.post(BASE_URL + `/api/notes/delete/${id}`, null, {
       withCredentials: true,
     });
-    // getNotes();
+    setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
     setNotesUpdated(!notesUpdated);
-  }
+    setTriggerUpdate(true); // Trigger update after add/update action
+  };
 
-  function editNote(id) {
-    // console.log(id);
+  const editNote = (id) => {
     const note = notes.find((note) => note._id === id);
-    // console.log(note)
     setEditingNote(note);
-  }
-  return (
-    <>
-      {!isLoggedIn ? (
-        <>
-          <h1 className="header">Welcome to KG Notes</h1>
-          <div className="link-container">
-            <Link className="auth-link link" to="/login">
-              Login
-            </Link>
-            <Link className="auth-link link" to="/signup">
-              SignUp
-            </Link>
-          </div>
-        </>
-      ) : (
-        <div>
-          <h1 className="greeting">hello {localStorage.getItem('name')}</h1>
-          <CreateArea addNote={addNote} editingNote={editingNote} />
-          {notes.length === 0 && (
-            <div className="no-note">
-              <h1>{alert}</h1>
-            </div>
-          )}
-          {notes.map((note) => (
-            <Note
-              deleteNote={deleteNote}
-              editNote={editNote}
-              key={note._id}
-              id={note._id}
-              note={note}
-            />
-          ))}
-        </div>
-      )}
-    </>
-  );
+  };
+
+  return <>{!isLoggedIn ? renderWelcome() : renderLoggedIn()}</>;
 }
 
 export default Home;

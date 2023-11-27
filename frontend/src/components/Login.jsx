@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useContext} from 'react';
+import { useState, useContext } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/logincontext';
@@ -50,7 +50,7 @@ export default function Login(props) {
 
       if (response.status === 200 && response.status < 300) {
         const json = response.data;
-// console.log(json);
+        // console.log(json);
         if (json.success) {
           props.showAlert('Logged in Success', 'success');
           setIsLoggedIn(true);
@@ -91,28 +91,77 @@ export default function Login(props) {
   //     console.error('Error:', error);
   //   }
   // }
-  async function handleOauthLogin(e) {
+  async function handleGOauthLogin(e) {
     e.preventDefault();
     updateUserName('');
     window.open(`${BASE_URL}/auth/google`, '_self');
     // Wait for Google OAuth process to complete
 
-try {
-      const response = await axios.get(`${BASE_URL}/auth/google/callback`);
-      // console.log(response.status);
-      if (response.status === 200 && response.status < 300) {
-        const json = response.data;
+    // try {
+    //       const response = await axios.get(`${BASE_URL}/auth/google/callback`);
+    //       // console.log(response.status);
+    //       if (response.status === 200 && response.status < 300) {
+    //         const json = response.data;
 
-        if (json.success) {
-          props.showAlert('Logged in Success', 'success');
-          setIsLoggedIn(true);
-          navigate('/');
-        }
-      }
-    } catch (error) {
-      // console.error('Error:', error);
-    }
+    //         if (json.success) {
+    //           props.showAlert('Logged in Success', 'success');
+    //           setIsLoggedIn(true);
+    //           navigate('/');
+    //         }
+    //       }
+    //     } catch (error) {
+    //       // console.error('Error:', error);
+    //     }
+
   }
+
+  async function handleFOauthLogin(e) {
+    e.preventDefault();
+    updateUserName('');
+    window.open(`${BASE_URL}/auth/facebook`, '_self');
+    // Wait for Google OAuth process to complete
+
+    // try {
+    //       const response = await axios.get(`${BASE_URL}/auth/google/callback`);
+    //       // console.log(response.status);
+    //       if (response.status === 200 && response.status < 300) {
+    //         const json = response.data;
+
+    //         if (json.success) {
+    //           props.showAlert('Logged in Success', 'success');
+    //           setIsLoggedIn(true);
+    //           navigate('/');
+    //         }
+    //       }
+    //     } catch (error) {
+    //       // console.error('Error:', error);
+    //     }
+
+  }
+  async function handleGiOauthLogin(e) {
+    e.preventDefault();
+    updateUserName('');
+    window.open(`${BASE_URL}/auth/github`, '_self');
+    // Wait for Google OAuth process to complete
+
+    // try {
+    //       const response = await axios.get(`${BASE_URL}/auth/google/callback`);
+    //       // console.log(response.status);
+    //       if (response.status === 200 && response.status < 300) {
+    //         const json = response.data;
+
+    //         if (json.success) {
+    //           props.showAlert('Logged in Success', 'success');
+    //           setIsLoggedIn(true);
+    //           navigate('/');
+    //         }
+    //       }
+    //     } catch (error) {
+    //       // console.error('Error:', error);
+    //     }
+
+  }
+  
 
   return (
     <>
@@ -143,7 +192,7 @@ try {
                   value={credentials.password}
                 />
                 <button
-                  className="btn password-button"
+                  className="btn btn-light password-button"
                   type="button"
                   onClick={togglePasswordVisibility}
                 >
@@ -166,11 +215,34 @@ try {
         <div className="row mb-6">
           <div className="col col-md-4">
             <button
-              onClick={handleOauthLogin}
+              onClick={handleGOauthLogin}
               className="btn btn-primary login-button btn-submit"
               type="submit"
             >
-              Sign In With Google
+              <i className="fa-brands fa-google"></i>Sign In With Google
+            </button>
+            
+          </div>
+        </div>
+        <div className="row mb-6">
+          <div className="col col-md-4">
+            <button
+              onClick={handleFOauthLogin}
+              className="btn btn-primary login-button btn-submit"
+              type="submit"
+            >
+              <i className="fa-brands fa-facebook"></i>Sign In With Facebook
+            </button>
+          </div>
+        </div>
+        <div className="row mb-6">
+          <div className="col col-md-4">
+            <button
+              onClick={handleGiOauthLogin}
+              className="btn btn-primary login-button btn-submit"
+              type="submit"
+            >
+              <i className="fa-brands fa-github"></i>Sign In With Github
             </button>
           </div>
         </div>

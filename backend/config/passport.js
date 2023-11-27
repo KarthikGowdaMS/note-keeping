@@ -5,6 +5,7 @@ const LocalStrategy = require('passport-local');
 const GoogleStrategy = require('passport-google-oauth20');
 const FacebookStrategy = require('passport-facebook');
 const MeetupStrategy = require('passport-meetup').Strategy;
+const GitHubStrategy = require('passport-github2').Strategy;
 const keys = require('../keys.js');
 const User = require('../models/user.js');
 //middleware to encrypt passwords
@@ -169,7 +170,11 @@ passport.use(
 
       //done(null, { id: profile.id });
       process.nextTick(async function () {
-        const user = await User.findOne({ socialID: profile.id });
+        const user = await User.findOne(
+          { email: profile.emails[0].value },
+          { socialID: profile.id }
+        );
+        console.log(user);
         if (user) {
           console.log('Already signed in.');
           return done(null, user);
@@ -194,48 +199,47 @@ passport.use(
 );
 
 // //passport config for facebook signin
-// passport.use(new FacebookStrategy({
-//     clientID: keys.facebook.appID,
-//     clientSecret: keys.facebook.appSecret,
-//     callbackURL: "/auth/facebook/callback",
-//     profileFields: ["id", "displayName", "email", "first_name", "last_name"]
-// }, function(accessToken, refreshToken, profile, done) {
-//     console.log(profile);
-//     console.log("ID: " + profile.id);
-//     console.log("Display name: " + profile.displayName);
-//     console.log("fb passport callback");
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: keys.facebook.appID,
+      clientSecret: keys.facebook.appSecret,
+      callbackURL: '/auth/facebook/callback',
+      profileFields: ['id', 'displayName', 'email', 'first_name', 'last_name'],
+    },
+    function (accessToken, refreshToken, profile, done) {
+      console.log(profile);
+      console.log('ID: ' + profile.id);
+      console.log('Display name: ' + profile.displayName);
+      console.log('fb passport callback');
 
-//     process.nextTick(function() {
-//         User.findOne({
-//             where: {
-//                 socialID: profile.id
-//             }
-//         }).then(function(user) {
-//             if (user) {
-//                 console.log('signupMessage', 'That email is already taken.');
-//                 return done(null, user);
-//             } else {
-//                 User.create({
-//                     userName: profile.displayName,
-//                     firstName: profile.name.givenName,
-//                     lastName: profile.name.familyName,
-//                     email: profile.emails[0].value,
-//                     authMethod: "facebook",
-//                     socialID: profile.id
-
-//                 }).then(function(dbUser, created) {
-//                     if (!dbUser) {
-//                         return done(null, false);
-//                     } else {
-//                         console.log(dbUser.dataValues);
-//                         return done(null, dbUser);
-//                     }
-//                 })
-//             }
-//         })
-//     });
-
-// }));
+      process.nextTick(async function () {
+        const user = await User.findOne(
+          { email: profile.emails[0].value },
+          { socialID: profile.id }
+        );
+        if (user) {
+          console.log('Already signed in.');
+          return done(null, user);
+        } else {
+          User.create({
+            name: profile.displayName,
+            email: profile.emails[0].value,
+            authMethod: 'facebook',
+            socialID: profile.id,
+          }).then(function (dbUser, created) {
+            if (!dbUser) {
+              return done(null, false);
+            } else {
+              console.log(dbUser.dataValues);
+              return done(null, dbUser);
+            }
+          });
+        }
+      });
+    }
+  )
+);
 
 // // Use the MeetupStrategy within Passport.
 // //   Strategies in passport require a `verify` function, which accept
@@ -262,6 +266,58 @@ passport.use(
 //     });
 //   }
 // ));
+
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: keys.github.clientID,
+      clientSecret: keys.github.clientSecret,
+      callbackURL: '/auth/github/callback',
+    },
+    function (accessToken, refreshToken, profile, done) {
+      console.log(profile);
+      console.log('ID: ' + profile.id);
+      console.log('Display name: ' + profile.displayName);
+      console.log('github passport callback');
+
+      process.nextTick(async function () {
+        let user = await User.findOne({ email: profile.emails[0].value });
+        if (user) {
+          let Iduser = await User.findOne({ socialID: profile.id });
+          if (!Iduser) {
+            user.socialID = profile.id;
+            user.authMethod = 'github';
+
+            const dbUser = await user.save();
+            if (!dbUser) {
+              return done(null, false);
+            } else {
+              console.log(dbUser.dataValues);
+              return done(null, dbUser);
+            }
+          } else {
+            console.log('Already signed in.');
+            return done(null, user);
+          }
+        } else {
+          User.create({
+            name: profile.displayName,
+            email: profile.emails[0].value,
+            authMethod: 'github',
+            socialID: profile.id,
+          }).then(function (dbUser, created) {
+            if (!dbUser) {
+              return done(null, false);
+            } else {
+              console.log(dbUser.dataValues);
+              return done(null, dbUser);
+            }
+          });
+        }
+      });
+    }
+  )
+);
 
 //generate hash for password
 function generateHash(password) {
