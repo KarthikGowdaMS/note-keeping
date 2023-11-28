@@ -41,7 +41,7 @@ function App() {
                 element={<SignUp showAlert={showAlert} />}
               />
             </Routes>
-            <Footer />
+            
           </UserNameProvider>
         </AuthProvider>
       </Router>
