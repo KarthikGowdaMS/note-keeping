@@ -170,14 +170,24 @@ passport.use(
 
       //done(null, { id: profile.id });
       process.nextTick(async function () {
-        const user = await User.findOne(
-          { email: profile.emails[0].value },
-          { socialID: profile.id }
-        );
-        console.log(user);
+        let user = await User.findOne({ email: profile.emails[0].value });
         if (user) {
-          console.log('Already signed in.');
-          return done(null, user);
+          let Iduser = await User.findOne({ socialID: profile.id });
+          if (!Iduser) {
+            user.socialID = profile.id;
+            user.authMethod = 'google';
+
+            const dbUser = await user.save();
+            if (!dbUser) {
+              return done(null, false);
+            } else {
+              console.log(dbUser.dataValues);
+              return done(null, dbUser);
+            }
+          } else {
+            console.log('Already signed in.');
+            return done(null, user);
+          }
         } else {
           User.create({
             name: profile.displayName,
@@ -204,7 +214,7 @@ passport.use(
     {
       clientID: keys.facebook.appID,
       clientSecret: keys.facebook.appSecret,
-      callbackURL: '/auth/facebook/callback',
+      callbackURL: 'https://note-keeping-backend.karthikgowdams.com/auth/facebook/callback',
       profileFields: ['id', 'displayName', 'email', 'first_name', 'last_name'],
     },
     function (accessToken, refreshToken, profile, done) {
@@ -214,13 +224,24 @@ passport.use(
       console.log('fb passport callback');
 
       process.nextTick(async function () {
-        const user = await User.findOne(
-          { email: profile.emails[0].value },
-          { socialID: profile.id }
-        );
+        let user = await User.findOne({ email: profile.emails[0].value });
         if (user) {
-          console.log('Already signed in.');
-          return done(null, user);
+          let Iduser = await User.findOne({ socialID: profile.id });
+          if (!Iduser) {
+            user.socialID = profile.id;
+            user.authMethod = 'facebook';
+
+            const dbUser = await user.save();
+            if (!dbUser) {
+              return done(null, false);
+            } else {
+              console.log(dbUser.dataValues);
+              return done(null, dbUser);
+            }
+          } else {
+            console.log('Already signed in.');
+            return done(null, user);
+          }
         } else {
           User.create({
             name: profile.displayName,
