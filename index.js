@@ -44,7 +44,7 @@ app.use(
 mongoose.Promise = Promise;
 //change this to your own mongo collection
 mongoose.connect(
-  'mongodb+srv://karthikgowdams27:ukA3eKYhwCCQlGK1@root-cluster.ppsjecp.mongodb.net/noteDB',{useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
+  'mongodb+srv://karthikgowdams27:4q0Au5BhftEhZBkF@root-cluster.ppsjecp.mongodb.net/noteDB',{useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
 );
 
 // Init passport authentication
