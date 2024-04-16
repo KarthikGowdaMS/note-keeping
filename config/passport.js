@@ -10,6 +10,9 @@ const keys = require('../keys.js');
 const User = require('../models/user.js');
 //middleware to encrypt passwords
 const bCrypt = require('bcrypt-nodejs');
+const nodemailer = require('nodemailer');
+const otp=require('../models/otp.js');
+
 
 // Passport session setup
 passport.serializeUser(function (user, done) {
@@ -63,14 +66,30 @@ passport.use(
               email: req.body.email,
               password: userPassword,
               authMethod: 'local',
+              verified: false,
             };
-            User.create(newUser).then(function (dbUser, created) {
+            User.create(newUser).then(function (dbUser) {
               if (!dbUser) {
                 return done(null, false);
               } else {
+                sendotpemail(dbUser.email,dbUser._id);
                 return done(null, dbUser);
               }
             });
+              // newUser.save().then(
+              //   (user) => {
+              //     console.log('user', user);
+              //     return done(null, user);
+              //   },
+              //   (err) => {
+              //     console.log('err', err);
+              //     return done(null, false, { message: 'Something went wrong with your Signin' });
+              //   },
+              //   (result)=>{
+              //     sendotpemail(result,res);
+              //   }
+                  
+              // );
           }
         });
       });
@@ -343,4 +362,46 @@ passport.use(
 //generate hash for password
 function generateHash(password) {
   return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null);
+}
+
+async function sendotpemail(email,_id){
+  console.log(email);
+  const notp=Math.floor(100000 + Math.random() * 900000);
+
+
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'mskarthikgowda03@gmail.com',
+      pass: 'xwbl pgop wcjm csun',
+    },
+  });
+
+  const mailOptions = {
+    from: 'mskarthikgowda03@gmail.com',
+    to: email,
+    subject: 'Verify Your Keeper App Account',
+    text: `Your OTP is ${notp}`,
+    };
+
+const hashedotp= generateHash(notp.toString());
+
+    const newotp=new otp({
+      userid:_id,
+      email:email,
+      otp:hashedotp,
+      createdAt:Date.now(),
+      expiresAt:Date.now()+360000,
+    });
+    newotp.save();
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
 }

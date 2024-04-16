@@ -5,8 +5,12 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20');
 const User = require('../models/user.js');
+const Otp = require('../models/otp.js');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated.js');
+const bcrypt = require('bcrypt');
+const bCrypt = require('bcrypt-nodejs');
 
+const e = require('express');
 // router.get('/user' ,async (req, res) => {
 
 //   const id = req.session.passport.user;
@@ -234,4 +238,42 @@ router.get(
 //     res.redirect('/');
 //   });
 
+router.post('/verifyotp', async (req, res) => {
+  let success=false;
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Please enter all fields' });
+    } else {
+      const userotp = await Otp.find({ email: email }).exec();
+      if (userotp.length <= 0) {
+        res.status(400).json({ message: 'Invalid OTP' });
+      } else {
+        const { expiresAt } = userotp[0];
+        const { hashedotp } = userotp[0].otp;
+
+        if (expiresAt < Date.now()) {
+          res.status(400).json({ message: 'OTP expired' });
+        } else {
+          const isValidPassword = function (userpass, password) {
+            return bCrypt.compareSync(password, userpass);
+          };
+            if (isValidPassword(hashedotp, otp)) {
+              success=true;
+               User.updateOne({_id: userotp[0]._id}, { $set: { isVerified: true } })
+            } else {
+              res.status(400).json({ message: 'Invalid OTP' });
+            }
+          }
+        
+        // console.log(userotp);
+      }
+    }
+    return res.status(200).json({ success: success, user: req.user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+
+});
 module.exports = router;
