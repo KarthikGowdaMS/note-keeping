@@ -18,7 +18,7 @@ function Home(props) {
   const [greeting, setGreeting] = useState('');
   const renderWelcome = () => (
     <>
-      <h1 className="header">Welcome to KG Notes</h1>
+      <h1 className="header">Note Take</h1>
       <div className="link-container">
         <Link className="auth-link link" to="/login">
           Login

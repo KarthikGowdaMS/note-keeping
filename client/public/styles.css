@@ -6,11 +6,26 @@
 html {
   font-family: 'Montserrat', sans-serif;
 }
-body {
-  background-color: black;
-  background-image: url("https://www.transparenttextures.com/patterns/light-grey-floral-motif.png");
-  /* overflow: hidden; */
-  /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+body{
+  background-image: url("/background.png");
+  background-repeat: none;
+
+  background-size: cover;
+
+  font-family: "Ubuntu", sans-serif;
+  font-size: 2rem;
+
+  color: rgb(32, 32, 139);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+
+.container{
+    position: absolute;
+    right: 20vw;
+    top: 40vh;
+    
 }
 a {
   text-decoration: none;
