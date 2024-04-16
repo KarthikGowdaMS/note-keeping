@@ -76,20 +76,7 @@ passport.use(
                 return done(null, dbUser);
               }
             });
-              // newUser.save().then(
-              //   (user) => {
-              //     console.log('user', user);
-              //     return done(null, user);
-              //   },
-              //   (err) => {
-              //     console.log('err', err);
-              //     return done(null, false, { message: 'Something went wrong with your Signin' });
-              //   },
-              //   (result)=>{
-              //     sendotpemail(result,res);
-              //   }
-                  
-              // );
+
           }
         });
       });
@@ -385,7 +372,7 @@ async function sendotpemail(email,_id){
     text: `Your OTP is ${notp}`,
     };
 
-const hashedotp= generateHash(notp.toString());
+const hashedotp= generateHash(notp);
 
     const newotp=new otp({
       userid:_id,

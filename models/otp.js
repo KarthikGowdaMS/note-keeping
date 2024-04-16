@@ -17,6 +17,10 @@ const otpschema=new mongoose.Schema({
     expiresAt:{
         type:Date,
 
+    },
+    userid:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
     }
 })
 

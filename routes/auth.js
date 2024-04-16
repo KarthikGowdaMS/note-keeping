@@ -7,10 +7,10 @@ const GoogleStrategy = require('passport-google-oauth20');
 const User = require('../models/user.js');
 const Otp = require('../models/otp.js');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated.js');
-const bcrypt = require('bcrypt');
 const bCrypt = require('bcrypt-nodejs');
 
 const e = require('express');
+const { hasSubscribers } = require('diagnostics_channel');
 // router.get('/user' ,async (req, res) => {
 
 //   const id = req.session.passport.user;
@@ -246,34 +246,39 @@ router.post('/verifyotp', async (req, res) => {
       return res.status(400).json({ message: 'Please enter all fields' });
     } else {
       const userotp = await Otp.find({ email: email }).exec();
+      // console.log(userotp);
       if (userotp.length <= 0) {
         res.status(400).json({ message: 'Invalid OTP' });
       } else {
         const { expiresAt } = userotp[0];
-        const { hashedotp } = userotp[0].otp;
-
+        const hashedotp  = userotp[0].otp;
+        console.log(expiresAt);
         if (expiresAt < Date.now()) {
-          res.status(400).json({ message: 'OTP expired' });
+         return res.status(400).json({ message: 'OTP expired' });
         } else {
-          const isValidPassword = function (userpass, password) {
-            return bCrypt.compareSync(password, userpass);
-          };
-            if (isValidPassword(hashedotp, otp)) {
-              success=true;
-               User.updateOne({_id: userotp[0]._id}, { $set: { isVerified: true } })
+          
+            if (isValidPassword(hashedotp,otp)) {
+               success=true;
+               console.log(userotp[0].userid);
+               await User.findByIdAndUpdate(userotp[0].userid, { verified: true }).exec();
+               return res.status(200).json({ success: success, user: req.user });
+
             } else {
-              res.status(400).json({ message: 'Invalid OTP' });
+              return res.status(400).json({ message: 'Invalid OTP' });
             }
           }
         
         // console.log(userotp);
       }
     }
-    return res.status(200).json({ success: success, user: req.user });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal server error' });
   }
 
 });
+const isValidPassword = function (userpass, password) {
+ 
+  return bCrypt.compareSync(password, userpass);
+};
 module.exports = router;
