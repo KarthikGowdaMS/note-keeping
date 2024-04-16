@@ -17,7 +17,7 @@ function Home(props) {
   const [triggerUpdate, setTriggerUpdate] = useState(false);
   const [greeting, setGreeting] = useState('');
   const renderWelcome = () => (
-    <>
+    <div className='container'>
       <h1 className="header">Note Take</h1>
       <div className="link-container">
         <Link className="auth-link link" to="/login">
@@ -27,7 +27,7 @@ function Home(props) {
           SignUp
         </Link>
       </div>
-    </>
+    </div>
   );
 
   const renderLoggedIn = () => (
