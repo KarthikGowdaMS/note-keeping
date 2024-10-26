@@ -220,7 +220,7 @@ passport.use(
     {
       clientID: keys.facebook.appID,
       clientSecret: keys.facebook.appSecret,
-      callbackURL: 'https://note-keeping-backend.karthikgowdams.com/auth/facebook/callback',
+      callbackURL: 'https://note-keeping-backend.karthikgowdams.co/auth/facebook/callback',
       profileFields: ['id', 'displayName', 'email', 'first_name', 'last_name'],
     },
     function (accessToken, refreshToken, profile, done) {

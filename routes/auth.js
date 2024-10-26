@@ -168,7 +168,7 @@ router.get('/login/success', (req, res) => {
 
     // return res.status(200).json({ success: success, user: userI });
     // req.session.loggedIn = true;
-    res.redirect(`https://note-keeping.karthikgowdams.com/`);
+    res.redirect(`https://note-keeping.karthikgowdams.co/`);
     // res.redirect(`http://192.168.0.103:3000`);
     // res.redirect(`http://localhost:3000/`);
   } else {
