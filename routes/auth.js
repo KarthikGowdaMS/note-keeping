@@ -9,8 +9,6 @@ const Otp = require('../models/otp.js');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated.js');
 const bCrypt = require('bcrypt-nodejs');
 
-const e = require('express');
-const { hasSubscribers } = require('diagnostics_channel');
 // router.get('/user' ,async (req, res) => {
 
 //   const id = req.session.passport.user;
